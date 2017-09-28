@@ -8,6 +8,8 @@
 #include <cstdlib>
 #include <cstdio>
 
+using namespace std;
+
 class MeshReaderSalomeUnv
 {
     private:
@@ -32,7 +34,7 @@ class MeshReaderSalomeUnv
 
         bool face_is_exist(set<int>);
         bool edge_is_exist(int, int);
-        void createFace(int*, vector<int>);
+        void createFirstFace(int*, vector<int>);
 
     public:
         MeshReaderSalomeUnv(char* fName): fileName(fName){}

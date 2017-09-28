@@ -146,7 +146,7 @@ bool MeshReaderSalomeUnv::edge_is_exist(int i, int j){
     return false;
 }
 
-void MeshReaderSalomeUnv::createFace(int* indexesOfPoints, vector<int> indFace) {
+void MeshReaderSalomeUnv::createFirstFace(int* indexesOfPoints, vector<int> indFace) {
 
         int i, j, k;
         int ind1 = -1;
@@ -201,7 +201,7 @@ void MeshReaderSalomeUnv::read(Mesh* mesh)
     mesh->createCells(cells.size()); // создает динамический массив шестигранников размера cell.size()
 
     int int_tmp[8];// координаты точек для создания cell(нужен определенный порядок)
-    int temp, k;
+    int k;
     bool temp_vector[8];// нужен для различия двух противоположных граней
     vector<int> indFace1;
     vector<int> indFace2;
@@ -209,31 +209,61 @@ void MeshReaderSalomeUnv::read(Mesh* mesh)
     for(vector<vector<int> >::iterator it = cells.begin(); it != cells.end(); ++it) {
 
         indFace1.clear();
+        indFace2.clear();
 
         for(k = 0 ; k < 8; k++)
           temp_vector[i] = false;
 
-        do {
         for(k = 0; k < 4; k++)
-            indFace1.insert(it[k]);
+          indFace1.push_back(it[k]);
 
+        int vectIndexes[4];
+        for(k = 0; k < 4; k++)
+          vectIndexes[k] = k + 1;
 
-        }while(!face_is_exist(set(indFace1.begin(), indFace1.end())));
+        int i = 3;
+        int j;
+        while( !face_is_exist(set(indFace1.begin(), indFace1.end())) && i != -1) { // Генерация сочетания без повторений для нахождения грани
+
+            if(vectIndexes[i] < 5 + i)
+            {
+               vectIndexes[i]++;
+               for(j = i+1; j < 4; j++)
+                  vectIndexes[j] = vectIndexes[i] + j - i;
+
+               i = k - 1;
+            }
+            else
+                i--;
+
+            indFace1.clear();
+            for(k = 0; k < 8; k++)
+                temp_vector[k] = false;
+
+            for(k = 0; k < 4; k++) {
+                indFace1.push_back( it[ vectIndexes[k] - 1] );
+                temp_vector[ vectIndexes[k] - 1 ] = true;
+            }
+        }
+
+        if(i == -1)
+        {
+         ///Error (не получается грань)
+        }
 
         for(k = 0; k < 8; k++)
-            if(temp_vector[k])
+            if( !temp_vector[k] )
                 indFace2.push_back(it[k]);
 
-        createFace(int_tmp, indFace1);
+        createFirstFace(int_tmp, indFace1);
 
         for(k = 0; k < 4; k++) {
-            temp = int_tmp[k];
             for(vector<int>::iterator fit2 = indFace2.begin(); fit2 != indFace2.end(); ++fit2) {
                 if( edge_is_exist(int_tmp[k], *fit2) )
                     int_tmp[k + 4] = *fit2;
             }
         }
 
-        mesh->initCell(tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5], tmp[6], tmp[7]);
+        mesh->initCell(int_tmp[0], int_tmp[1], int_tmp[2], int_tmp[3], int_tmp[4], int_tmp[5], int_tmp[6], int_tmp[7]);
     }
 }

@@ -4,7 +4,7 @@
 template <class T>
 class MeshIterator;
 
-class Pointf
+class Point
 {
 public:
 //private:	

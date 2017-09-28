@@ -6,14 +6,14 @@
 class Cell;
 
 template <class T>
-class MeshIterator : public std::iterator<std::random_access_iterator_tag, T /* Тип элемента */>
+class MeshIterator : public std::iterator<std::random_access_iterator_tag, T /* РўРёРї СЌР»РµРјРµРЅС‚Р° */>
 {
 	friend class Cell;
 private:
 	T* t;
 	MeshIterator(T* t) : t(t) {}
 public:
-	// Операции, необходимые для всех категорий итераторов.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ РІСЃРµС… РєР°С‚РµРіРѕСЂРёР№ РёС‚РµСЂР°С‚РѕСЂРѕРІ.
 	MeshIterator() = default;
 	MeshIterator(const MeshIterator&) = default;
 	MeshIterator& operator=(const MeshIterator&) = default;
@@ -22,26 +22,26 @@ public:
 	MeshIterator& operator++() { t++; return *this; }
 	iterator operator++(int) { auto old = *this; ++(*this); return old; }
 
-	// Операции, необходимые для InputIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ InputIterator.
 	pointer operator->() const { return t; }
 
-	// Операции, необходимые для BidirectionalIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ BidirectionalIterator.
 	MeshIterator& operator--() { t--; return *this; }
 	MeshIterator operator--(int) { auto old = *this; --(*this); return old; }
 
-	// Операции, необходимые для RandomAccessIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ RandomAccessIterator.
 	reference operator[](difference_type n) const { auto tmp = *this; tmp += n; return *tmp; }
 	MeshIterator& operator+=(difference_type n) { t += n; return *this; }
 	MeshIterator& operator-=(difference_type n) { return *this += -n; }
 
-	// Операции, необходимые для всех категорий итераторов.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ РІСЃРµС… РєР°С‚РµРіРѕСЂРёР№ РёС‚РµСЂР°С‚РѕСЂРѕРІ.
 	void swap(MeshIterator& a, MeshIterator& b) { std::swap(a.t, b.t); }
 
-	// Операции, необходимые для InputIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ InputIterator.
 	bool operator==(const MeshIterator& other) { return t == other.t; }
 	bool operator!=(const MeshIterator& other) { return t != other.t; }
 
-	// Операции, необходимые для RandomAccessIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ RandomAccessIterator.
 	bool operator<(const MeshIterator& other) { return (t - other.t) < 0; }
 	bool operator>(const MeshIterator& other) { return (t - other.t) > 0; }
 	bool operator<=(const MeshIterator& other) { return !(*this > other); }

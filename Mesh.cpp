@@ -1,68 +1,35 @@
-#include <iostream>
 #include <cmath>
+#include <iostream>
+#include "Mesh.h"
 
-using namespace std;
-
-
-struct Point
-{
-    double x;
-    double y;
-    double z;
-};
-
+using std::cout;
+using std::endl;
 
 ///////////////////////
-class Edge
+void Edge::initEdge(Point* p1, Point* p2)
 {
-  private:
-    Point* p[2];
+    p[0] = p1;
+    p[1] = p2;
+}
 
-  public:
-    void initEdge(Point* p1, Point* p2)
-    {
-        p[0] = p1;
-        p[1] = p2;
-    }
-
-    double getlength()
-    {
-        return sqrt( pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2) );
-    }
-
-    friend class Cell;
-};
+double Edge::getlength()
+{
+    return sqrt( pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2) );
+}
 
 
 ////////////////////////
-class Face
+void Face::initFace(Edge* e1, Edge* e2, Edge* e3, Edge* e4)
 {
-  private:
-    Edge* e[4];
-  public:
-    void initFace(Edge* e1, Edge* e2, Edge* e3, Edge* e4)
-    {
-      e[0] = e1;
-      e[1] = e2;
-      e[2] = e3;
-      e[3] = e4;
-    }
-
-
-    friend class Cell;
-};
-
+  e[0] = e1;
+  e[1] = e2;
+  e[2] = e3;
+  e[3] = e4;
+}
 
 ///////////////////
-class Cell
-{
-private:
-    Edge* e;
-    Face* f;
-    Point* p;
 
-public:
-Cell(Point* p)
+Cell::Cell(Point* p)
 {
     this->p = p;
     e = new Edge[12];
@@ -89,15 +56,11 @@ Cell(Point* p)
     f[5].initFace(&e[4], &e[5], &e[6], &e[7]);
 }
 
-
-~Cell()
+Cell::~Cell()
 {
     delete [] e;
     delete [] f;
 }
-
-};
-
 
 int main()
 {

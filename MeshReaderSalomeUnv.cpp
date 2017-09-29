@@ -191,16 +191,17 @@ void MeshReaderSalomeUnv::read(Mesh* mesh)
         ///Error
     }
 
-    mesh->createPoints(points.size()); // создает динамический массив точек размера points.size()
+    Point* temp_masOfpoints = new Point[points.size()];
+    for(int i = 0; i < points.size(); i++) {
 
-
-    for(vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
-        mesh->setPoint(it->x, it->y, it->z); // инициализирует массив точек (нумерация сохраняется !!!)
+            temp_masOfpoints[i] = points[i];
     }
 
-    mesh->createCells(cells.size()); // создает динамический массив шестигранников размера cell.size()
+    mesh = new Mesh(temp_masOfpoints, points.size()); // создает динамический массив точек размера points.size()
 
-    int int_tmp[8];// координаты точек для создания cell(нужен определенный порядок)
+    delete [] temp_masOfpoints;
+
+    int pIndexes[8];// координаты точек для создания cell(нужен определенный порядок)
     int k;
     bool temp_vector[8];// нужен для различия двух противоположных граней
     vector<int> indFace1;
@@ -255,15 +256,17 @@ void MeshReaderSalomeUnv::read(Mesh* mesh)
             if( !temp_vector[k] )
                 indFace2.push_back(it[k]);
 
-        createFirstFace(int_tmp, indFace1);
+        createFirstFace(pIndexes, indFace1);
 
         for(k = 0; k < 4; k++) {
             for(vector<int>::iterator fit2 = indFace2.begin(); fit2 != indFace2.end(); ++fit2) {
-                if( edge_is_exist(int_tmp[k], *fit2) )
-                    int_tmp[k + 4] = *fit2;
+                if( edge_is_exist(int_tmp[k], *fit2) ) {
+                    pIndexes[k + 4] = *fit2;
+                    break;
+                }
             }
         }
 
-        mesh->initCell(int_tmp[0], int_tmp[1], int_tmp[2], int_tmp[3], int_tmp[4], int_tmp[5], int_tmp[6], int_tmp[7]);
+        mesh->createCell(pIndexes[0], pIndexes[1], pIndexes[2], pIndexes[3], pIndexes[4], pIndexes[5], pIndexes[6], pIndexes[7]);
     }
 }

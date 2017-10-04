@@ -1,6 +1,7 @@
-#include "MeshReaderSalomeUnv.h"
+#include "MeshReaderUnv.h"
 
-void MeshReaderSalomeUnv::read_block(vector<string> *listOfstrings, ifstream& fin)
+
+void MeshReaderUnv::read_block(vector<string> *listOfstrings, ifstream& fin)
 {
     listOfstrings->clear();
     int minusCnt = 0;
@@ -21,17 +22,17 @@ void MeshReaderSalomeUnv::read_block(vector<string> *listOfstrings, ifstream& fi
     }
 }
 
-void MeshReaderSalomeUnv::parse_block_164(vector<string> listOfstrings)
+void MeshReaderUnv::parse_block_164(vector<string> listOfstrings)
 {
 
 }
 
-void MeshReaderSalomeUnv::parse_block_2420(vector<string> listOfstrings)
+void MeshReaderUnv::parse_block_2420(vector<string> listOfstrings)
 {
 
 }
 
-void MeshReaderSalomeUnv::parse_block_2411(vector<string> listOfstrings)
+void MeshReaderUnv::parse_block_2411(vector<string> listOfstrings)
 {
     points.clear();
     vector<string>::iterator it = listOfstrings.begin();
@@ -47,7 +48,7 @@ void MeshReaderSalomeUnv::parse_block_2411(vector<string> listOfstrings)
     }
 }
 
-void MeshReaderSalomeUnv::parse_block_2412(vector<string> listOfstrings)
+void MeshReaderUnv::parse_block_2412(vector<string> listOfstrings)
 {
     vector<string>::iterator it = listOfstrings.begin();
     ++it;
@@ -106,7 +107,7 @@ void MeshReaderSalomeUnv::parse_block_2412(vector<string> listOfstrings)
     }
 }
 
-void MeshReaderSalomeUnv::parse_block(vector<string> listOfstrings)
+void MeshReaderUnv::parse_block(vector<string> listOfstrings)
 {
     int type = atoi( listOfstrings[0].c_str() );
 
@@ -128,7 +129,7 @@ void MeshReaderSalomeUnv::parse_block(vector<string> listOfstrings)
 }
 
 
-bool MeshReaderSalomeUnv::face_is_exist(set<int> face){
+bool MeshReaderUnv::face_is_exist(set<int> face){
 
     for(vector<vector<int> >::iterator it = faces.begin(); it != faces.end(); ++it) {
         if(face == set<int>((*it).begin(), (*it).end()))
@@ -137,7 +138,7 @@ bool MeshReaderSalomeUnv::face_is_exist(set<int> face){
     return false;
 }
 
-bool MeshReaderSalomeUnv::edge_is_exist(int i, int j){
+bool MeshReaderUnv::edge_is_exist(int i, int j){
 
     for(vector<vector<int> >::iterator it = edges.begin(); it != edges.end(); ++it) {
         if( (i == (*it)[0] && j == (*it)[1]) || (i == (*it)[1] && j == (*it)[0]) )
@@ -146,7 +147,7 @@ bool MeshReaderSalomeUnv::edge_is_exist(int i, int j){
     return false;
 }
 
-void MeshReaderSalomeUnv::createFirstFace(int* indexesOfPoints, vector<int> indFace) {
+void MeshReaderUnv::createFirstFace(int* indexesOfPoints, vector<int> indFace) {
 
         int i, j, k;
         int ind1 = -1;
@@ -171,7 +172,7 @@ void MeshReaderSalomeUnv::createFirstFace(int* indexesOfPoints, vector<int> indF
         indexesOfPoints[3] = indFace[ind2];
 }
 
-void MeshReaderSalomeUnv::read(Mesh* mesh)
+void MeshReaderUnv::read(Mesh* mesh)
 {
     ifstream fin(fileName);
 
@@ -270,3 +271,4 @@ void MeshReaderSalomeUnv::read(Mesh* mesh)
         mesh->createCell(pIndexes[0], pIndexes[1], pIndexes[2], pIndexes[3], pIndexes[4], pIndexes[5], pIndexes[6], pIndexes[7]);
     }
 }
+

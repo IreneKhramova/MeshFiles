@@ -1,5 +1,5 @@
-#ifndef MESHREADERSALOMEUNV_H
-#define MESHREADERSALOMEUNV_H
+#ifndef MESHREADERUNV_H
+#define MESHREADERUNV_H
 
 #include <Mesh.h>
 #include <vector>
@@ -10,7 +10,7 @@
 
 using namespace std;
 
-class MeshReaderSalomeUnv
+class MeshReaderUnv
 {
     private:
         struct Point
@@ -37,11 +37,11 @@ class MeshReaderSalomeUnv
         void createFirstFace(int*, vector<int>);
 
     public:
-        MeshReaderSalomeUnv(char* fName): fileName(fName){}
-        ~MeshReaderSalomeUnv() { delete [] fileName; }
+        MeshReaderUnv(char* fName): fileName(fName){}
+        ~MeshReaderUnv() { delete [] fileName; }
 
         void read(Mesh*);
 
 };
 
-#endif // MESHREADERSALOMEUNV_H
+#endif // MESHREADERUNV_H

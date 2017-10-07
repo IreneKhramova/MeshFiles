@@ -1,10 +1,17 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include <vector>
+#include <set>
+#include <list>
+#include <cmath>
+
+
+using namespace std;
+
 class Point
 {
 public:
-//private:	
 	double x;
 	double y;
 	double z;
@@ -16,11 +23,11 @@ class Edge
 {
 private:
 	Point* p[2];
+	int countOfUsing;
 
 public:
-	void initEdge(Point* p1, Point* p2);
-
-	double getlength();
+	Edge(Point*, Point*);
+    double getlength();
 
 	friend class Cell;
 };
@@ -30,9 +37,13 @@ public:
 class Face
 {
 private:
+    Point* p[4];
 	Edge* e[4];
+	int countOfUsing;
+
 public:
-	void initFace(Edge* e1, Edge* e2, Edge* e3, Edge* e4);
+    Face(Point*, Point*, Point*, Point*);
+	void initFace(Edge*, Edge*, Edge*, Edge*);
 
 	friend class Cell;
 };
@@ -41,14 +52,36 @@ public:
 class Cell
 {
 private:
-	Edge* e;
-	Face* f;
-	Point* p;
+    Point* p[8];
+	Edge* e[12];
+	Face* f[6];
+
+	Edge* getEdge(list<Edge*>&, Point*, Point*);
+    Face* getFace(list<Face*>&, Point*, Point*, Point*, Point*);
 
 public:
-	Cell(Point* p);
+	Cell(list<Edge*>&, list<Face*>&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
 
-	~Cell();
+};
+
+//////////////
+class Mesh
+{
+private:
+    Point* points;
+    unsigned int pCount;
+    list<Edge*> edges;
+    list<Face*> faces;
+    vector<Cell*> cells;
+
+public:
+    Mesh(Point*, unsigned int);
+    ~Mesh();
+
+    void createEdge(int, int);
+    void createFace(int, int, int, int);
+    void createCell(int, int, int, int, int, int, int, int);
+
 };
 
 #endif // MESH_H

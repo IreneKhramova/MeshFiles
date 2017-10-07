@@ -1,4 +1,4 @@
-#include "MeshReaderUnv.h"
+#include "../include/MeshReaderUnv.h"
 
 
 void MeshReaderUnv::read_block(vector<string> *listOfstrings, ifstream& fin)
@@ -10,16 +10,17 @@ void MeshReaderUnv::read_block(vector<string> *listOfstrings, ifstream& fin)
 
     while( minusCnt < 2 && !fin.eof())
     {
-        getline(fin,str);
+        getline(fin, str);
         pos = str.find("-1");
-         if( pos == str.length() - 2)
-         {
+
+         if(pos != -1) {
             minusCnt++;
             continue;
          }
 
-      listOfstrings->push_back(str);
+        listOfstrings->push_back(str);
     }
+
 }
 
 void MeshReaderUnv::parse_block_164(vector<string> listOfstrings)
@@ -32,30 +33,38 @@ void MeshReaderUnv::parse_block_2420(vector<string> listOfstrings)
 
 }
 
-void MeshReaderUnv::parse_block_2411(vector<string> listOfstrings)
+void MeshReaderUnv::parse_block_2411(vector<string> &listOfstrings)
 {
     points.clear();
     vector<string>::iterator it = listOfstrings.begin();
     ++it;
 
     unsigned int i = 0;
-    while(it != listOfstrings.end() && ( (i++) % 2 == 1 ) )
+    while(it != listOfstrings.end() )
     {
-        Point p;
-        sscanf(it->c_str(), "%lf %lf %lf", &p.x, &p.y, &p.z);
-        points.push_back(p);
-        ++it;
+          if(i % 2 == 1) {
+            Point p;
+
+            int pos;
+            while( (pos = it->find('D')) != -1) {
+                (*it)[pos] = 'E';
+            }
+            sscanf(it->c_str(), "%lf %lf %lf", &p.x, &p.y, &p.z);
+
+            points.push_back(p);
+        }
+         ++i;
+         ++it;
     }
 }
 
-void MeshReaderUnv::parse_block_2412(vector<string> listOfstrings)
+void MeshReaderUnv::parse_block_2412(vector<string> &listOfstrings)
 {
     vector<string>::iterator it = listOfstrings.begin();
     ++it;
 
     int tmp[8];
     vector<int> p;
-
     while(it != listOfstrings.end())
     {
         p.clear();
@@ -64,7 +73,7 @@ void MeshReaderUnv::parse_block_2412(vector<string> listOfstrings)
 
         switch(tmp[1])
         {
-        case 11:
+        case 21:
                 sscanf(it->c_str(),"%d %d %d", &tmp[0], &tmp[1], &tmp[2]);
                 ++it;
                 sscanf(it->c_str(),"%d %d", &tmp[0], &tmp[1]);
@@ -76,7 +85,7 @@ void MeshReaderUnv::parse_block_2412(vector<string> listOfstrings)
                 edges.push_back(p);
                 break;
 
-        case 44:
+        case 94:
                 sscanf(it->c_str(),"%d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3]);
                 ++it;
 
@@ -88,7 +97,7 @@ void MeshReaderUnv::parse_block_2412(vector<string> listOfstrings)
                 faces.push_back(p);
                 break;
 
-        case 111:
+        case 115:
                 sscanf(it->c_str(),"%d %d %d %d %d %d %d %d", &tmp[0],&tmp[1],&tmp[2],&tmp[3],&tmp[4],&tmp[5],&tmp[6],&tmp[7]);
                 ++it;
 
@@ -107,7 +116,7 @@ void MeshReaderUnv::parse_block_2412(vector<string> listOfstrings)
     }
 }
 
-void MeshReaderUnv::parse_block(vector<string> listOfstrings)
+void MeshReaderUnv::parse_block(vector<string> &listOfstrings)
 {
     int type = atoi( listOfstrings[0].c_str() );
 
@@ -174,7 +183,7 @@ void MeshReaderUnv::createFirstFace(int* indexesOfPoints, vector<int> indFace) {
 
 void MeshReaderUnv::read(Mesh* mesh)
 {
-    ifstream fin(fileName);
+    ifstream fin(fileName.c_str());
 
     if( fin.is_open() ) {
 
@@ -183,7 +192,7 @@ void MeshReaderUnv::read(Mesh* mesh)
         while( !fin.eof() ) {
 
             read_block(&listOfStrings, fin);
-            parse_block(sl);
+            parse_block(listOfStrings);
 
         }
         fin.close();
@@ -202,6 +211,16 @@ void MeshReaderUnv::read(Mesh* mesh)
 
     delete [] temp_masOfpoints;
 
+    for(vector<vector<int> >::iterator it = edges.begin(); it != edges.end(); ++it) {
+
+        mesh->createEdge((*it)[0], (*it)[1]);
+    }
+
+    for(vector<vector<int> >::iterator it = faces.begin(); it != faces.end(); ++it) {
+
+        mesh->createFace((*it)[0], (*it)[1], (*it)[2], (*it)[3]);
+    }
+
     int pIndexes[8];// координаты точек для создания cell(нужен определенный порядок)
     int k;
     bool temp_vector[8];// нужен для различия двух противоположных граней
@@ -214,10 +233,10 @@ void MeshReaderUnv::read(Mesh* mesh)
         indFace2.clear();
 
         for(k = 0 ; k < 8; k++)
-          temp_vector[i] = false;
+          temp_vector[k] = false;
 
         for(k = 0; k < 4; k++)
-          indFace1.push_back(it[k]);
+          indFace1.push_back((*it)[k]);
 
         int vectIndexes[4];
         for(k = 0; k < 4; k++)
@@ -225,7 +244,8 @@ void MeshReaderUnv::read(Mesh* mesh)
 
         int i = 3;
         int j;
-        while( !face_is_exist(set(indFace1.begin(), indFace1.end())) && i != -1) { // Генерация сочетания без повторений для нахождения грани
+
+        while( !face_is_exist(set<int>(indFace1.begin(), indFace1.end())) && i != -1) { // Генерация сочетания без повторений для нахождения грани
 
             if(vectIndexes[i] < 5 + i)
             {
@@ -243,7 +263,7 @@ void MeshReaderUnv::read(Mesh* mesh)
                 temp_vector[k] = false;
 
             for(k = 0; k < 4; k++) {
-                indFace1.push_back( it[ vectIndexes[k] - 1] );
+                indFace1.push_back( (*it)[ vectIndexes[k] - 1] );
                 temp_vector[ vectIndexes[k] - 1 ] = true;
             }
         }
@@ -255,13 +275,13 @@ void MeshReaderUnv::read(Mesh* mesh)
 
         for(k = 0; k < 8; k++)
             if( !temp_vector[k] )
-                indFace2.push_back(it[k]);
+                indFace2.push_back((*it)[k]);
 
         createFirstFace(pIndexes, indFace1);
 
         for(k = 0; k < 4; k++) {
             for(vector<int>::iterator fit2 = indFace2.begin(); fit2 != indFace2.end(); ++fit2) {
-                if( edge_is_exist(int_tmp[k], *fit2) ) {
+                if( edge_is_exist(pIndexes[k], *fit2) ) {
                     pIndexes[k + 4] = *fit2;
                     break;
                 }
@@ -271,4 +291,6 @@ void MeshReaderUnv::read(Mesh* mesh)
         mesh->createCell(pIndexes[0], pIndexes[1], pIndexes[2], pIndexes[3], pIndexes[4], pIndexes[5], pIndexes[6], pIndexes[7]);
     }
 }
+
+
 

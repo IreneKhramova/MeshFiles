@@ -1,44 +1,38 @@
 #ifndef MESHREADERUNV_H
 #define MESHREADERUNV_H
 
-#include <Mesh.h>
+#include "Mesh.h"
 #include <vector>
 #include <set>
-#include <string>
 #include <cstdlib>
 #include <cstdio>
+#include <fstream>
+#include <cstring>
 
 using namespace std;
 
 class MeshReaderUnv
 {
     private:
-        struct Point
-        {
-            double x;
-            double y;
-            double z;
-            Point(double x1 = 0, double y1 = 0, double z1 = 0) : x(x1), y(y1), z(z1){}
-        };
 
-        char* fileName;
+        string fileName;
         vector<Point> points;
         vector<vector<int> > edges, faces , cells;
 
         void read_block(vector<string> *, ifstream&);
-        void parse_block(vector<string>);
+        void parse_block(vector<string>&);
         void parse_block_164(vector<string>);
         void parse_block_2420(vector<string>);
-        void parse_block_2411(vector<string>);
-        void parse_block_2412(vector<string>);
+        void parse_block_2411(vector<string>&);
+        void parse_block_2412(vector<string>&);
 
         bool face_is_exist(set<int>);
         bool edge_is_exist(int, int);
         void createFirstFace(int*, vector<int>);
 
     public:
-        MeshReaderUnv(char* fName): fileName(fName){}
-        ~MeshReaderUnv() { delete [] fileName; }
+        MeshReaderUnv(string fName) { fileName = fName; }
+        ~MeshReaderUnv() { }
 
         void read(Mesh*);
 

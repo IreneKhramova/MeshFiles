@@ -1,104 +1,191 @@
-#include <cmath>
 #include "Mesh.h"
-#include "MeshIterator.h"
-
-using std::cout;
-using std::endl;
+#include "PointIterator.h"
 
 ///////////////////////
-void Edge::initEdge(Point* p1, Point* p2)
+Edge::Edge(Point* p1, Point* p2)
 {
-    p[0] = p1;
-    p[1] = p2;
-}
-
-Point* Edge::getPoint(int i)
-{
-	return p[i];
+	countOfUsing = 4;
+	p[0] = p1;
+	p[1] = p2;
 }
 
 double Edge::getlength()
 {
-    return sqrt( pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2) );
+	return sqrt(pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2));
 }
 
 
 ////////////////////////
-void Face::initFace(Edge* e1, Edge* e2, Edge* e3, Edge* e4)
-{
-  e[0] = e1;
-  e[1] = e2;
-  e[2] = e3;
-  e[3] = e4;
+Face::Face(Point* p1, Point* p2, Point* p3, Point* p4) {
+
+	countOfUsing = 2;
+	p[0] = p1;
+	p[1] = p2;
+	p[2] = p3;
+	p[3] = p4;
 }
 
-Edge* Face::getEdge(int i)
+void Face::initFace(Edge* e1, Edge* e2, Edge* e3, Edge* e4)
 {
-	return e[i];
+	e[0] = e1;
+	e[1] = e2;
+	e[2] = e3;
+	e[3] = e4;
 }
 
 ///////////////////
 
-Cell::Cell(Point* p)
-{
-    this->p = p;
-    e = new Edge[12];
-    f = new Face[6];
 
-    e[0].initEdge(&p[0], &p[1]);
-    e[1].initEdge(&p[1], &p[2]);
-    e[2].initEdge(&p[2], &p[3]);
-    e[3].initEdge(&p[3], &p[0]);
-    e[4].initEdge(&p[4], &p[5]);
-    e[5].initEdge(&p[5], &p[6]);
-    e[6].initEdge(&p[6], &p[7]);
-    e[7].initEdge(&p[7], &p[4]);
-    e[8].initEdge(&p[0], &p[4]);
-    e[9].initEdge(&p[1], &p[5]);
-    e[10].initEdge(&p[2], &p[6]);
-    e[11].initEdge(&p[3], &p[7]);
+Cell::Cell(list<Edge*> &edges, list<Face*> &faces, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6, Point* p7, Point* p8) {
 
-    f[0].initFace(&e[0], &e[9], &e[4], &e[8]);
-    f[1].initFace(&e[1], &e[10], &e[5], &e[9]);
-    f[2].initFace(&e[2], &e[11], &e[6], &e[10]);
-    f[3].initFace(&e[3], &e[8], &e[7], &e[11]);
-    f[4].initFace(&e[0], &e[1], &e[2], &e[3]);
-    f[5].initFace(&e[4], &e[5], &e[6], &e[7]);
+	p[0] = p1;
+	p[1] = p2;
+	p[2] = p3;
+	p[3] = p4;
+	p[4] = p5;
+	p[5] = p6;
+	p[6] = p7;
+	p[7] = p8;
+
+	e[0] = getEdge(edges, p[0], p[1]);
+	e[1] = getEdge(edges, p[1], p[2]);
+	e[2] = getEdge(edges, p[2], p[3]);
+	e[3] = getEdge(edges, p[3], p[0]);
+	e[4] = getEdge(edges, p[4], p[5]);
+	e[5] = getEdge(edges, p[5], p[6]);
+	e[6] = getEdge(edges, p[6], p[7]);
+	e[7] = getEdge(edges, p[7], p[4]);
+	e[8] = getEdge(edges, p[0], p[4]);
+	e[9] = getEdge(edges, p[1], p[5]);
+	e[10] = getEdge(edges, p[2], p[6]);
+	e[11] = getEdge(edges, p[3], p[7]);
+
+	f[0] = getFace(faces, p[0], p[1], p[4], p[5]);
+	f[1] = getFace(faces, p[1], p[2], p[5], p[6]);
+	f[2] = getFace(faces, p[2], p[3], p[6], p[7]);
+	f[3] = getFace(faces, p[0], p[3], p[4], p[7]);
+	f[4] = getFace(faces, p[0], p[1], p[2], p[3]);
+	f[5] = getFace(faces, p[4], p[5], p[6], p[7]);
+
+	if (f[0]->countOfUsing == 1)
+		f[0]->initFace(e[0], e[9], e[4], e[8]);
+	if (f[1]->countOfUsing == 1)
+		f[1]->initFace(e[1], e[10], e[5], e[9]);
+	if (f[2]->countOfUsing == 1)
+		f[2]->initFace(e[2], e[11], e[6], e[10]);
+	if (f[3]->countOfUsing == 1)
+		f[3]->initFace(e[3], e[8], e[7], e[11]);
+	if (f[4]->countOfUsing == 1)
+		f[4]->initFace(e[0], e[1], e[2], e[3]);
+	if (f[5]->countOfUsing == 1)
+		f[5]->initFace(e[4], e[5], e[6], e[7]);
 }
 
-Cell::~Cell()
-{
-    delete [] e;
-    delete [] f;
+
+Edge* Cell::getEdge(list<Edge*> &edges, Point* p1, Point* p2) {
+
+	for (list<Edge*>::iterator it = edges.begin(); it != edges.end(); ++it) {
+		if (((*it)->p[0] == p1 && (*it)->p[1] == p2) || ((*it)->p[0] == p2 && (*it)->p[1] == p1))
+		{
+			(*it)->countOfUsing--;
+			if ((*it)->countOfUsing == 0) {
+
+				Edge* result = *it;
+				list<Edge*>::iterator it_temp = it;
+				++it;
+				edges.erase(it_temp);
+
+				while (it != edges.end() && result->countOfUsing < (*it)->countOfUsing) {
+					++it;
+				}
+
+				edges.insert(it, result);
+				return result;
+			}
+			else
+				return (*it);
+		}
+	}
 }
 
-Cell::FaceIterator Cell::beginFace() { return FaceIterator(f); }
-Cell::FaceIterator Cell::endFace() { return FaceIterator(&f[6]); }
 
-Cell::EdgeIterator Cell::beginEdge() { return EdgeIterator(e); }
-Cell::EdgeIterator Cell::endEdge() { return EdgeIterator(&e[12]); }
+Face* Cell::getFace(list<Face*> &faces, Point* p1, Point* p2, Point* p3, Point* p4) {
 
-Cell::PointIterator Cell::beginPoint() { return PointIterator(p); }
-Cell::PointIterator Cell::endPoint() { return PointIterator(&p[9]); }
+	set<Point*> searchFace;
 
+	searchFace.insert(p1);
+	searchFace.insert(p2);
+	searchFace.insert(p3);
+	searchFace.insert(p4);
 
-int main()
-{
-    Point p[8];
-    p[0].x = 0; p[0].y = 0; p[0].z = 0;
-    p[1].x = 0; p[1].y = 1; p[1].z = 0;
-    p[2].x = 1; p[2].y = 1; p[2].z = 0;
-    p[3].x = 1; p[3].y = 0; p[3].z = 0;
-    p[4].x = 0; p[4].y = 0; p[4].z = 1;
-    p[5].x = 0; p[5].y = 1; p[5].z = 1;
-    p[6].x = 1; p[6].y = 1; p[6].z = 1;
-    p[7].x = 1; p[7].y = 0; p[7].z = 1;
-    //Единичный куб(координаты нужно вводить в определенном порядке)
-    Cell cell(p);
-    //Вычисляет наибольшую длину ребра
+	set<Point*> tempFace;
 
-	for (Cell::FaceIterator it = cell.beginFace(); it != cell.endFace(); it++)
-		cout << it->getEdge(0)->getPoint(0)->x << " ";
+	for (list<Face*>::iterator it = faces.begin(); it != faces.end(); ++it) {
+		tempFace.clear();
+		tempFace.insert((*it)->p[0]);
+		tempFace.insert((*it)->p[1]);
+		tempFace.insert((*it)->p[2]);
+		tempFace.insert((*it)->p[3]);
 
-    return 0;
+		if (tempFace == searchFace) {
+
+			(*it)->countOfUsing--;
+
+			if ((*it)->countOfUsing == 0) {
+
+				Face* result = *it;
+				list<Face*>::iterator it_temp = it;
+				++it;
+				faces.erase(it_temp);
+
+				while (it != faces.end() && result->countOfUsing < (*it)->countOfUsing) {
+					++it;
+				}
+
+				faces.insert(it, result);
+				return result;
+			}
+			else
+				return (*it);
+		}
+	}
 }
+
+////////////////////
+
+Mesh::Mesh(Point* p, unsigned int pCount) {
+
+	this->pCount = pCount;
+	points = new Point[pCount];
+	for (unsigned int i = 0; i < pCount; i++) {
+		points[i] = p[i];
+	}
+}
+
+Mesh::~Mesh() {
+	delete[] points;
+
+	for (list<Edge*>::iterator it = edges.begin(); it != edges.end(); ++it)
+		delete (*it);
+
+	for (list<Face*>::iterator it = faces.begin(); it != faces.end(); ++it)
+		delete (*it);
+
+	for (vector<Cell*>::iterator it = cells.begin(); it != cells.end(); ++it)
+		delete (*it);
+}
+
+void Mesh::createEdge(int ind1, int ind2) {
+	edges.push_back(new Edge(&points[ind1], &points[ind2]));
+}
+
+void Mesh::createFace(int ind1, int ind2, int ind3, int ind4) {
+	faces.push_back(new Face(&points[ind1], &points[ind2], &points[ind3], &points[ind4]));
+}
+
+void Mesh::createCell(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6, int ind7, int ind8) {
+	cells.push_back(new Cell(edges, faces, &points[ind1], &points[ind2], &points[ind3], &points[ind4], &points[ind5], &points[ind6], &points[ind7], &points[ind8]));
+}
+
+PointIterator Mesh::beginPoint() { return PointIterator(points); }
+PointIterator Mesh::endPoint() { return PointIterator(&points[pCount+1]); }

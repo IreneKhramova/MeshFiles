@@ -1,13 +1,19 @@
 #ifndef MESH_H
 #define MESH_H
 
-template <class T>
-class MeshIterator;
+#include <vector>
+#include <set>
+#include <list>
+#include <cmath>
+
+class CellIterator;
+class PointIterator;
+
+using namespace std;
 
 class Point
 {
 public:
-//private:	
 	double x;
 	double y;
 	double z;
@@ -19,12 +25,10 @@ class Edge
 {
 private:
 	Point* p[2];
+	int countOfUsing;
 
 public:
-	void initEdge(Point* p1, Point* p2);
-
-	Point* getPoint(int i);
-
+	Edge(Point*, Point*);
 	double getlength();
 
 	friend class Cell;
@@ -35,11 +39,13 @@ public:
 class Face
 {
 private:
+	Point* p[4];
 	Edge* e[4];
-public:
-	void initFace(Edge* e1, Edge* e2, Edge* e3, Edge* e4);
+	int countOfUsing;
 
-	Edge* getEdge(int i);
+public:
+	Face(Point*, Point*, Point*, Point*);
+	void initFace(Edge*, Edge*, Edge*, Edge*);
 
 	friend class Cell;
 };
@@ -48,27 +54,39 @@ public:
 class Cell
 {
 private:
-	Edge* e;
-	Face* f;
-	Point* p;
+	Point* p[8];
+	Edge* e[12];
+	Face* f[6];
+
+	Edge* getEdge(list<Edge*>&, Point*, Point*);
+	Face* getFace(list<Face*>&, Point*, Point*, Point*, Point*);
 
 public:
-	Cell(Point* p);
+	Cell(list<Edge*>&, list<Face*>&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
 
-	typedef MeshIterator<Face> FaceIterator;
-	typedef MeshIterator<Edge> EdgeIterator;
-	typedef MeshIterator<Point> PointIterator;
+};
 
-	FaceIterator beginFace();
-	FaceIterator endFace();
+//////////////
+class Mesh
+{
+private:
+	Point* points;
+	unsigned int pCount;
+	list<Edge*> edges;
+	list<Face*> faces;
+	vector<Cell*> cells;
 
-	EdgeIterator beginEdge();
-	EdgeIterator endEdge();
+public:
+	Mesh(Point*, unsigned int);
+	~Mesh();
+
+	void createEdge(int, int);
+	void createFace(int, int, int, int);
+	void createCell(int, int, int, int, int, int, int, int);
+
 
 	PointIterator beginPoint();
 	PointIterator endPoint();
-
-	~Cell();
 };
 
 #endif // MESH_H

@@ -84,6 +84,8 @@ public:
 	void createFace(int, int, int, int);
 	void createCell(int, int, int, int, int, int, int, int);
 
+	CellIterator beginCell();
+	CellIterator endCell();
 
 	PointIterator beginPoint();
 	PointIterator endPoint();

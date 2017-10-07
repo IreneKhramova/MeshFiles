@@ -1,4 +1,4 @@
-#include "../include/Mesh.h"
+#include "Mesh.h"
 
 ///////////////////////
 Edge::Edge(Point* p1, Point* p2)

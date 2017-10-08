@@ -188,8 +188,8 @@ void Mesh::createCell(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6
 	cells.push_back(new Cell(edges, faces, &points[ind1], &points[ind2], &points[ind3], &points[ind4], &points[ind5], &points[ind6], &points[ind7], &points[ind8]));
 }
 
-CellIterator Mesh::beginCell() { return CellIterator(&cells, 0); }
-CellIterator Mesh::endCell() { return CellIterator(&cells, cells.size()+1); }
+CellIterator Mesh::beginCell() { return CellIterator(cells.begin()); }
+CellIterator Mesh::endCell() { return CellIterator(cells.end()); }
 
 PointIterator Mesh::beginPoint() { return PointIterator(points); }
 PointIterator Mesh::endPoint() { return PointIterator(&points[pCount+1]); }

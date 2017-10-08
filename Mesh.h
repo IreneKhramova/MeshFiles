@@ -9,6 +9,9 @@
 class CellIterator;
 class PointIterator;
 
+template <class T>
+class MeshIterator;
+
 using namespace std;
 
 class Point
@@ -84,8 +87,17 @@ public:
 	void createFace(int, int, int, int);
 	void createCell(int, int, int, int, int, int, int, int);
 
+	typedef MeshIterator<Face> FaceIterator;
+	typedef MeshIterator<Edge> EdgeIterator;
+
 	CellIterator beginCell();
 	CellIterator endCell();
+
+	FaceIterator beginFace();
+	FaceIterator endFace();
+
+	EdgeIterator beginEdge();
+	EdgeIterator endEdge();
 
 	PointIterator beginPoint();
 	PointIterator endPoint();

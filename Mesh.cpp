@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "MeshIterator.h"
 #include "CellIterator.h"
 #include "PointIterator.h"
 
@@ -190,6 +191,12 @@ void Mesh::createCell(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6
 
 CellIterator Mesh::beginCell() { return CellIterator(cells.begin()); }
 CellIterator Mesh::endCell() { return CellIterator(cells.end()); }
+
+Mesh::FaceIterator Mesh::beginFace() { return FaceIterator(faces.begin()); }
+Mesh::FaceIterator Mesh::endFace() { return FaceIterator(faces.end()); }
+
+Mesh::EdgeIterator Mesh::beginEdge() { return EdgeIterator(edges.begin()); }
+Mesh::EdgeIterator Mesh::endEdge() { return EdgeIterator(edges.end()); }
 
 PointIterator Mesh::beginPoint() { return PointIterator(points); }
 PointIterator Mesh::endPoint() { return PointIterator(&points[pCount+1]); }

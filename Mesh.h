@@ -89,6 +89,8 @@ public:
 
 	typedef MeshIterator<Face> FaceIterator;
 	typedef MeshIterator<Edge> EdgeIterator;
+	typedef CellIterator CellIterator;
+	typedef PointIterator PointIterator;
 
 	CellIterator beginCell();
 	CellIterator endCell();

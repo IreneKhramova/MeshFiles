@@ -49,6 +49,8 @@ public:
 };
 
 ///////////////////
+class Mesh;
+
 class Cell
 {
 private:
@@ -62,6 +64,7 @@ private:
 public:
 	Cell(list<Edge*>&, list<Face*>&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
 
+	friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
 };
 
 //////////////
@@ -82,6 +85,7 @@ public:
     void createFace(int, int, int, int);
     void createCell(int, int, int, int, int, int, int, int);
 
+	friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
 };
 
 #endif // MESH_H

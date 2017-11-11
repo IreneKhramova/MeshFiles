@@ -185,3 +185,43 @@ void Mesh::createFace(int ind1, int ind2 ,int ind3 ,int ind4) {
 void Mesh::createCell(int ind1, int ind2, int ind3, int ind4, int ind5, int ind6, int ind7, int ind8) {
         cells.push_back( new Cell(edges, faces, &points[ind1], &points[ind2], &points[ind3], &points[ind4], &points[ind5], &points[ind6], &points[ind7], &points[ind8]) );
     }
+
+void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
+{
+	FILE *out;
+	out = fopen(filename, "w");
+	fprintf(out, "# vtk DataFile Version 3.0\n");
+	fprintf(out, "Mesh_test\n");
+	fprintf(out, "ASCII\n");
+	fprintf(out, "DATASET UNSTRUCTURED_GRID\n");
+	fprintf(out, "POINTS %d double\n", mesh->pCount);
+	for (int i = 0; i < mesh->pCount; i++)
+	{
+		fprintf(out, "%f %f %f\n", mesh->points[i].x, mesh->points[i].y, mesh->points[i].z);
+	}
+
+	int cellSize = mesh->cells.size();
+	fprintf(out, "CELLS %d %d\n", cellSize, 9 * cellSize);//9=8+1 : 8 points for each cell and "8"
+	for (int i = 0; i < cellSize; i++)
+	{
+		fprintf(out, "8"); //8 - number of Points in class Cell
+		for (int k = 0; k < 8; k++)
+		{
+			int ind = -1;
+			Point* addr = mesh->cells[i]->p[k];
+			for (int j = 0; j < mesh->pCount; j++)
+			{
+				if (&(mesh->points[j]) == addr)
+					ind = j;
+			}
+			fprintf(out, " %d", ind);
+		}
+		fprintf(out, "\n");
+	}
+	fprintf(out, "CELL_TYPES %d\n", cellSize);
+	for (int i = 0; i < cellSize; i++)
+	{
+		fprintf(out, "12\n"); //12 - VTK_HEXAHEDRON
+	}
+	fclose(out);
+}

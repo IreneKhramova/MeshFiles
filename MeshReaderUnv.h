@@ -1,11 +1,10 @@
 #ifndef MESHREADERUNV_H
 #define MESHREADERUNV_H
 
-#include "Mesh.h"
+#include "Mesh.cpp"
 #include <vector>
 #include <set>
 #include <cstdlib>
-#include <cstdio>
 #include <fstream>
 #include <cstring>
 
@@ -17,7 +16,8 @@ class MeshReaderUnv
 
         string fileName;
         vector<Point> points;
-        vector<vector<int> > edges, faces , cells;
+        vector<vector<int> > edges, faces, cells;
+        vector<int> type_faces, type_cells;
 
         void read_block(vector<string> *, ifstream&);
         void parse_block(vector<string>&);
@@ -28,13 +28,12 @@ class MeshReaderUnv
 
         bool face_is_exist(set<int>);
         bool edge_is_exist(int, int);
-        void createFirstFace(int*, vector<int>);
 
     public:
         MeshReaderUnv(string fName) { fileName = fName; }
         ~MeshReaderUnv() { }
 
-        void read(Mesh*);
+        void read(Mesh**);
 
 };
 

@@ -500,7 +500,7 @@ void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
 	for (int i = 0; i < cellCount; i++)
 	{
 		fprintf(out, "%d", mesh->cells[i]->pCount);
-		for (int k = 0; k < 8; k++)
+		for (int k = 0; k < mesh->cells[i]->pCount; k++)
 		{
 			int ind = -1;
 			Point* addr = mesh->cells[i]->p[k];

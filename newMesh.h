@@ -5,7 +5,6 @@
 #include <set>
 #include <list>
 #include <cmath>
-#include <cstdio>
 
 using namespace std;
 
@@ -37,86 +36,57 @@ public:
 ////////////////////////
 class Face
 {
- protected:
+ private:
     int type;
+    Point** p;
+	Edge** e;
+	int pCount;
+	int eCount;
+	int countOfUsing;
+	double S;
+
  public:
-    virtual void area() = 0;
+    Face(const int&, Point*, Point*, Point*);
+    Face(const int&, Point*, Point*, Point*, Point*);
 
- friend class Cell;
-};
+    ~Face();
 
-class Face_triangle : public Face
-{
-private:
-    Point* p[3];
-	Edge* e[3];
-	int countOfUsing;
-	double S;
+    void initFace(Edge*, Edge*, Edge*);
+    void initFace(Edge*, Edge*, Edge*, Edge*);
 
-public:
-    Face_triangle(int&, Point*, Point*, Point*);
-	void initFace(Edge*, Edge*, Edge*);
-	void area();
-
-    friend class Cell;
-	friend class Cell_tetrahedron;
-};
-
-class Face_quad : public Face
-{
-private:
-    Point* p[4];
-	Edge* e[4];
-	int countOfUsing;
-	double S;
-
-public:
-    Face_quad(int&, Point*, Point*, Point*, Point*);
-	void initFace(Edge*, Edge*, Edge*, Edge*);
     void area();
 
-    friend class Cell;
-	friend class Cell_hexahedron;
+ friend class Cell;
 };
 
 ///////////////////
 
 class Cell {
 
- protected:
+ private:
     int type;
+    Point** p;
+    Edge** e;
+    Face** f;
+    int pCount;
+    int eCount;
+    int fCount;
+    double V;
+
     Edge* getEdge(list<Edge*>&, Point*, Point*);
     Face* getFace(list<Face*>&, Point*, Point*, Point*);
     Face* getFace(list<Face*>&, Point*, Point*, Point*, Point*);
+
  public:
-    virtual void volume() = 0;
-};
+    Cell(list<Edge*>&, list<Face*>&, int&, Point*, Point*, Point*, Point*);
+    Cell(list<Edge*>&, list<Face*>&, int&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
 
-class Cell_tetrahedron: public Cell
-{
-private:
-    Point* p[4];
-	Edge* e[6];
-	Face_triangle* f[4];
-	double V;
+    ~Cell();
 
-public:
-	Cell_tetrahedron(list<Edge*>&, list<Face*>&, int&, Point*, Point*, Point*, Point*);
-	void volume();
-};
-
-class Cell_hexahedron: public Cell
-{
-private:
-    Point* p[8];
-	Edge* e[12];
-	Face_quad* f[6];
-	double V;
-
-public:
-	Cell_hexahedron(list<Edge*>&, list<Face*>&, int&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
     void volume();
 };
+
+
 
 //////////////
 class Mesh

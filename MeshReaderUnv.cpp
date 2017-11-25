@@ -1,5 +1,5 @@
 #include "MeshReaderUnv.h"
-
+#include <iostream>
 
 void MeshReaderUnv::read_block(vector<string> *listOfstrings, ifstream& fin)
 {
@@ -13,7 +13,7 @@ void MeshReaderUnv::read_block(vector<string> *listOfstrings, ifstream& fin)
         getline(fin, str);
         pos = str.find("-1");
 
-         if(pos != -1) {
+         if(pos != -1 && str.size() - 2 == pos) {
             minusCnt++;
             continue;
          }
@@ -142,6 +142,43 @@ void MeshReaderUnv::parse_block_2412(vector<string> &listOfstrings)
     }
 }
 
+void MeshReaderUnv::parse_block_2477(vector<string> &listOfstrings)
+{
+    bnd_cond.clear();
+
+    vector<string>::iterator it = listOfstrings.begin();
+    ++it;
+    vector<int> p;
+    int tmp[8];
+    char bnd_name[128];
+    int n;
+
+    while(it != listOfstrings.end()) {
+
+        sscanf(it->c_str(), "%d %d %d %d %d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3], &tmp[4], &tmp[5], &tmp[6], &tmp[7]);
+        n = tmp[7];
+        ++it;
+        sscanf(it->c_str(), "%s", bnd_name);
+        ++it;
+        p.clear();
+
+        for(int i = 0; i < n/2; i++) {
+             sscanf(it->c_str(), "%d %d %d %d %d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3], &tmp[4], &tmp[5], &tmp[6], &tmp[7]);
+             ++it;
+             p.push_back(--tmp[1]);
+             p.push_back(--tmp[5]);
+        }
+
+        if(n % 2 == 1) {
+             sscanf(it->c_str(), "%d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3]);
+             ++it;
+             p.push_back(--tmp[1]);
+        }
+
+        bnd_cond[string(bnd_name)] = p;
+    }
+}
+
 void MeshReaderUnv::parse_block(vector<string> &listOfstrings)
 {
     int type = atoi( listOfstrings[0].c_str() );
@@ -160,6 +197,8 @@ void MeshReaderUnv::parse_block(vector<string> &listOfstrings)
         case 2412:
             parse_block_2412(listOfstrings);
             break;
+        case 2477:
+            parse_block_2477(listOfstrings);
     }
 }
 
@@ -196,12 +235,11 @@ void MeshReaderUnv::read(Mesh** mesh)
 
             read_block(&listOfStrings, fin);
             parse_block(listOfStrings);
-
         }
         fin.close();
     }
     else {
-        ///Error
+        //Error
     }
 
     (*mesh) = new Mesh(points);
@@ -223,7 +261,6 @@ void MeshReaderUnv::read(Mesh** mesh)
              break;
         }
     }
-
 
     int k;
     vector<int> indFace1;
@@ -393,7 +430,6 @@ void MeshReaderUnv::read(Mesh** mesh)
                 faces.push_back(vector<int>(Face.begin(), Face.end()));
                 (*mesh)->createFace(0, indFace1[0], indFace1[3], indFace2[0], indFace2[3]);
             }
-
 
             vector<int> temp;
 

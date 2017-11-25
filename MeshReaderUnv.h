@@ -1,9 +1,10 @@
 #ifndef MESHREADERUNV_H
 #define MESHREADERUNV_H
 
-#include "Mesh.h"
+#include "newMesh.cpp"
 #include <vector>
 #include <set>
+#include <map>
 #include <cstdlib>
 #include <fstream>
 #include <cstring>
@@ -18,6 +19,7 @@ class MeshReaderUnv
         vector<Point> points;
         vector<vector<int> > edges, faces, cells;
         vector<int> type_faces, type_cells;
+        map<string, vector<int> > bnd_cond;
 
         void read_block(vector<string> *, ifstream&);
         void parse_block(vector<string>&);
@@ -25,6 +27,7 @@ class MeshReaderUnv
         void parse_block_2420(vector<string>);
         void parse_block_2411(vector<string>&);
         void parse_block_2412(vector<string>&);
+        void parse_block_2477(vector<string>&);
 
         bool face_is_exist(set<int>);
         bool edge_is_exist(int, int);
@@ -34,7 +37,6 @@ class MeshReaderUnv
         ~MeshReaderUnv() { }
 
         void read(Mesh**);
-
 };
 
 #endif // MESHREADERUNV_H

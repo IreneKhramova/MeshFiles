@@ -39,6 +39,8 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3)
     pCount = 3;
     eCount = 3;
     countOfUsing = 2;
+    c[0] = 0;
+    c[1] = 0;
 
     p = new Point*[pCount];
     e = new Edge*[eCount];
@@ -48,11 +50,19 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3)
     p[2] = p3;
 }
 
-void Face::initFace(Edge* e1, Edge* e2, Edge* e3)
+void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3)
 {
-  e[0] = e1;
-  e[1] = e2;
-  e[2] = e3;
+  if(countOfUsing == 1) { // инициализируем в первый раз
+
+    e[0] = e1;
+    e[1] = e2;
+    e[2] = e3;
+
+    this->c[0] = c;
+ }
+ else  {
+    this->c[1] = c;
+ }
 }
 
 
@@ -62,6 +72,8 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3, Point* p4)
     pCount = 4;
     eCount = 4;
     countOfUsing = 2;
+    c[0] = 0;
+    c[1] = 0;
 
     p = new Point*[pCount];
     e = new Edge*[eCount];
@@ -72,12 +84,20 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3, Point* p4)
     p[3] = p4;
 }
 
-void Face::initFace(Edge* e1, Edge* e2, Edge* e3, Edge* e4)
+void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3, Edge* e4)
 {
-  e[0] = e1;
-  e[1] = e2;
-  e[2] = e3;
-  e[3] = e4;
+  if(countOfUsing == 1) { // инициализируем в первый раз
+
+    e[0] = e1;
+    e[1] = e2;
+    e[2] = e3;
+    e[3] = e4;
+
+    this->c[0] = c;
+ }
+ else  {
+    this->c[1] = c;
+ }
 }
 
 // Вычисление площади грани
@@ -270,14 +290,10 @@ Cell::Cell(list<Edge*> &edges, list<Face*> &faces, int& type, Point* p1, Point* 
     f[2] = getFace(faces, p[0], p[2], p[3]);
     f[3] = getFace(faces, p[1], p[2], p[3]);
 
-    if(f[0]->countOfUsing == 1)
-        f[0]->initFace(e[0], e[1], e[2]);
-    if(f[1]->countOfUsing == 1)
-        f[1]->initFace(e[0], e[4], e[3]);
-    if(f[2]->countOfUsing == 1)
-        f[2]->initFace(e[2], e[5], e[3]);
-    if(f[3]->countOfUsing == 1)
-        f[3]->initFace(e[1], e[5], e[4]);
+    f[0]->initFace(this, e[0], e[1], e[2]);
+    f[1]->initFace(this, e[0], e[4], e[3]);
+    f[2]->initFace(this, e[2], e[5], e[3]);
+    f[3]->initFace(this, e[1], e[5], e[4]);
 }
 
 
@@ -321,18 +337,12 @@ Cell::Cell(list<Edge*> &edges, list<Face*> &faces, int& type, Point* p1, Point* 
     f[4] = getFace(faces, p[0], p[1], p[2], p[3]);
     f[5] = getFace(faces, p[4], p[5], p[6], p[7]);
 
-    if(f[0]->countOfUsing == 1)
-        f[0]->initFace(e[0], e[9], e[4], e[8]);
-    if(f[1]->countOfUsing == 1)
-        f[1]->initFace(e[1], e[10], e[5], e[9]);
-    if(f[2]->countOfUsing == 1)
-        f[2]->initFace(e[2], e[11], e[6], e[10]);
-    if(f[3]->countOfUsing == 1)
-        f[3]->initFace(e[3], e[8], e[7], e[11]);
-    if(f[4]->countOfUsing == 1)
-        f[4]->initFace(e[0], e[1], e[2], e[3]);
-    if(f[5]->countOfUsing == 1)
-        f[5]->initFace(e[4], e[5], e[6], e[7]);
+    f[0]->initFace(this, e[0], e[9], e[4], e[8]);
+    f[1]->initFace(this, e[1], e[10], e[5], e[9]);
+    f[2]->initFace(this, e[2], e[11], e[6], e[10]);
+    f[3]->initFace(this, e[3], e[8], e[7], e[11]);
+    f[4]->initFace(this, e[0], e[1], e[2], e[3]);
+    f[5]->initFace(this, e[4], e[5], e[6], e[7]);
 }
 
 // Вычисление объема клетки

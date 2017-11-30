@@ -5,6 +5,7 @@
 #include <set>
 #include <list>
 #include <cmath>
+#include <cstdio>
 
 using namespace std;
 
@@ -17,6 +18,8 @@ public:
 };
 
 ///////////////////////
+
+class Cell;
 
 class Edge
 {
@@ -40,6 +43,7 @@ class Face
     int type;
     Point** p;
 	Edge** e;
+	Cell* c[2]; // указатель на смежный Face
 	int pCount;
 	int eCount;
 	int countOfUsing;
@@ -51,8 +55,8 @@ class Face
 
     ~Face();
 
-    void initFace(Edge*, Edge*, Edge*);
-    void initFace(Edge*, Edge*, Edge*, Edge*);
+    void initFace(Cell*, Edge*, Edge*, Edge*);
+    void initFace(Cell*, Edge*, Edge*, Edge*, Edge*);
 
     void area();
 

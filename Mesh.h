@@ -5,7 +5,6 @@
 #include <set>
 #include <list>
 #include <cmath>
-#include <cstdio>
 
 using namespace std;
 
@@ -25,14 +24,11 @@ class Edge
 {
 private:
 	Point* p[2];
-	int countOfUsing;
 
 public:
 	Edge(Point*, Point*);
     double getlength();
     static Point getVector(Point*, Point*);
-
-	friend class Cell;
 };
 
 ////////////////////////
@@ -60,6 +56,7 @@ class Face
 
     void area();
 
+ friend class Mesh;
  friend class Cell;
 };
 
@@ -79,19 +76,17 @@ class Cell {
     int fCount;
     double V;
 
-    Edge* getEdge(list<Edge*>&, Point*, Point*);
-    Face* getFace(list<Face*>&, Point*, Point*, Point*);
-    Face* getFace(list<Face*>&, Point*, Point*, Point*, Point*);
-
  public:
-    Cell(list<Edge*>&, list<Face*>&, int&, Point*, Point*, Point*, Point*);
-    Cell(list<Edge*>&, list<Face*>&, int&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
+    Cell(int&, Point*, Point*, Point*, Point*);
+    Cell(int&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
 
     ~Cell();
 
     void volume();
 
     friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
+    friend class Mesh;
+    friend class MeshReaderUnv;
 };
 
 //////////////
@@ -101,23 +96,20 @@ class Mesh
 private:
     Point* points;
     unsigned int pCount;
-    list<Edge*> edges;
-    list<Face*> faces;
+    vector<Edge*> edges;
+    vector<Face*> faces;
     vector<Cell*> cells;
 
-
 public:
-    Mesh(Point*, unsigned int);
-    Mesh(const vector<Point>&);
+
     ~Mesh();
 
-    void createEdge(int, int);
-    void createFace(int, int, int, int);
-    void createFace(int, int, int, int, int);
-    void createCell(int, int, int, int, int);
-    void createCell(int, int, int, int, int, int, int, int, int);
+    void createPoints(Point*, unsigned int);
+    void createPoints(const vector<Point>&);
 
     friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
+
+    friend class MeshReaderUnv;
 };
 
 #endif // MESH_H

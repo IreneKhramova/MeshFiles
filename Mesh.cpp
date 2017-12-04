@@ -4,7 +4,6 @@
 
 Edge::Edge(Point* p1, Point* p2)
 {
-    countOfUsing = 4;
     p[0] = p1;
     p[1] = p2;
 }
@@ -52,7 +51,7 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3)
 
 void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3)
 {
-  if(countOfUsing == 1) { // инициализируем в первый раз
+  if(countOfUsing == 2) { // инициализируем в первый раз
 
     e[0] = e1;
     e[1] = e2;
@@ -63,6 +62,7 @@ void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3)
  else  {
     this->c[1] = c;
  }
+ countOfUsing--;
 }
 
 
@@ -86,7 +86,7 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3, Point* p4)
 
 void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3, Edge* e4)
 {
-  if(countOfUsing == 1) { // инициализируем в первый раз
+  if(countOfUsing == 2) { // инициализируем в первый раз
 
     e[0] = e1;
     e[1] = e2;
@@ -98,6 +98,7 @@ void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3, Edge* e4)
  else  {
     this->c[1] = c;
  }
+ countOfUsing--;
 }
 
 // Вычисление площади грани
@@ -134,126 +135,6 @@ void Face::area()
 
 ///////////////////
 
-Edge* Cell::getEdge(list<Edge*> &edges, Point* p1, Point* p2)
-{
-        for(list<Edge*>::iterator it = edges.begin(); it != edges.end(); ++it)
-        {
-            if( ( (*it)->p[0] == p1 && (*it)->p[1] == p2) || ((*it)->p[0] == p2 && (*it)->p[1] == p1))
-            {
-                (*it)->countOfUsing--;
-                if( (*it)->countOfUsing == 0)
-                {
-                    Edge* result = *it;
-                    list<Edge*>::iterator it_temp = it;
-                    ++it;
-                    edges.erase(it_temp);
-
-                    while(it != edges.end() && result->countOfUsing < (*it)->countOfUsing)
-                    {
-                          ++it;
-                    }
-
-                    edges.insert(it, result);
-                    return result;
-                }
-                else
-                    return (*it);
-            }
-        }
-}
-
-Face* Cell::getFace(list<Face*> &faces, Point* p1, Point* p2, Point* p3, Point* p4)
-{
-        set<Point*> searchFace;
-
-        searchFace.insert(p1);
-        searchFace.insert(p2);
-        searchFace.insert(p3);
-        searchFace.insert(p4);
-
-        set<Point*> tempFace;
-
-        for(list<Face*>::iterator it = faces.begin(); it != faces.end(); ++it)
-        {
-            if( (*it)->pCount != 4)
-                continue;
-
-            tempFace.clear();
-            tempFace.insert((*it)->p[0]);
-            tempFace.insert((*it)->p[1]);
-            tempFace.insert((*it)->p[2]);
-            tempFace.insert((*it)->p[3]);
-
-            if( tempFace == searchFace )
-            {
-                (*it)->countOfUsing--;
-
-                if( (*it)->countOfUsing == 0)
-                {
-                    Face* result = *it;
-                    list<Face*>::iterator it_temp = it;
-                    ++it;
-                    faces.erase(it_temp);
-
-                    while(it != faces.end() && result->countOfUsing < (*it)->countOfUsing)
-                    {
-                            ++it;
-                    }
-
-                    faces.insert(it, result);
-                    return result;
-                }
-                else
-                    return (*it);
-            }
-        }
-}
-
-Face* Cell::getFace(list<Face*> &faces, Point* p1, Point* p2, Point* p3)
-{
-        set<Point*> searchFace;
-
-        searchFace.insert(p1);
-        searchFace.insert(p2);
-        searchFace.insert(p3);
-
-        set<Point*> tempFace;
-
-        for(list<Face*>::iterator it = faces.begin(); it != faces.end(); ++it)
-        {
-            if( (*it)->pCount != 3)
-                continue;
-
-            tempFace.clear();
-            tempFace.insert((*it)->p[0]);
-            tempFace.insert((*it)->p[1]);
-            tempFace.insert((*it)->p[2]);
-
-            if( tempFace == searchFace )
-            {
-                 (*it)->countOfUsing--;
-
-                if((*it)->countOfUsing == 0)
-                {
-                    Face* result = *it;
-                    list<Face*>::iterator it_temp = it;
-                    ++it;
-                    faces.erase(it_temp);
-
-                    while(it != faces.end() && (result)->countOfUsing < (*it)->countOfUsing)
-                    {
-                            ++it;
-                    }
-
-                    faces.insert(it, result);
-                    return result;
-                }
-                else
-                    return (*it);
-            }
-        }
-}
-
 
 Cell::~Cell()
 {
@@ -262,7 +143,7 @@ Cell::~Cell()
     delete [] f;
 }
 
-Cell::Cell(list<Edge*> &edges, list<Face*> &faces, int& type, Point* p1, Point* p2, Point* p3, Point* p4)
+Cell::Cell(int& type, Point* p1, Point* p2, Point* p3, Point* p4)
 {
     this->type = type;
     pCount = 4;
@@ -277,27 +158,9 @@ Cell::Cell(list<Edge*> &edges, list<Face*> &faces, int& type, Point* p1, Point* 
     p[1] = p2;
     p[2] = p3;
     p[3] = p4;
-
-    e[0] = getEdge(edges, p[0], p[1]);
-    e[1] = getEdge(edges, p[1], p[2]);
-    e[2] = getEdge(edges, p[0], p[2]);
-    e[3] = getEdge(edges, p[0], p[3]);
-    e[4] = getEdge(edges, p[1], p[3]);
-    e[5] = getEdge(edges, p[2], p[3]);
-
-    f[0] = getFace(faces, p[0], p[1], p[2]);
-    f[1] = getFace(faces, p[0], p[1], p[3]);
-    f[2] = getFace(faces, p[0], p[2], p[3]);
-    f[3] = getFace(faces, p[1], p[2], p[3]);
-
-    f[0]->initFace(this, e[0], e[1], e[2]);
-    f[1]->initFace(this, e[0], e[4], e[3]);
-    f[2]->initFace(this, e[2], e[5], e[3]);
-    f[3]->initFace(this, e[1], e[5], e[4]);
 }
 
-
-Cell::Cell(list<Edge*> &edges, list<Face*> &faces, int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6, Point* p7, Point* p8)
+Cell::Cell(int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6, Point* p7, Point* p8)
 {
     this->type = type;
     pCount = 8;
@@ -316,33 +179,6 @@ Cell::Cell(list<Edge*> &edges, list<Face*> &faces, int& type, Point* p1, Point* 
     p[5] = p6;
     p[6] = p7;
     p[7] = p8;
-
-    e[0] = getEdge(edges, p[0], p[1]);
-    e[1] = getEdge(edges, p[1], p[2]);
-    e[2] = getEdge(edges, p[2], p[3]);
-    e[3] = getEdge(edges, p[3], p[0]);
-    e[4] = getEdge(edges, p[4], p[5]);
-    e[5] = getEdge(edges, p[5], p[6]);
-    e[6] = getEdge(edges, p[6], p[7]);
-    e[7] = getEdge(edges, p[7], p[4]);
-    e[8] = getEdge(edges, p[0], p[4]);
-    e[9] = getEdge(edges, p[1], p[5]);
-    e[10] = getEdge(edges, p[2], p[6]);
-    e[11] = getEdge(edges, p[3], p[7]);
-
-    f[0] = getFace(faces, p[0], p[1], p[4], p[5]);
-    f[1] = getFace(faces, p[1], p[2], p[5], p[6]);
-    f[2] = getFace(faces, p[2], p[3], p[6], p[7]);
-    f[3] = getFace(faces, p[0], p[3], p[4], p[7]);
-    f[4] = getFace(faces, p[0], p[1], p[2], p[3]);
-    f[5] = getFace(faces, p[4], p[5], p[6], p[7]);
-
-    f[0]->initFace(this, e[0], e[9], e[4], e[8]);
-    f[1]->initFace(this, e[1], e[10], e[5], e[9]);
-    f[2]->initFace(this, e[2], e[11], e[6], e[10]);
-    f[3]->initFace(this, e[3], e[8], e[7], e[11]);
-    f[4]->initFace(this, e[0], e[1], e[2], e[3]);
-    f[5]->initFace(this, e[4], e[5], e[6], e[7]);
 }
 
 // Вычисление объема клетки
@@ -350,8 +186,7 @@ void Cell::volume()
 {
     V = 0;
 
-    switch( type )
-    {
+    switch( type ) {
 
      case 111: // 111 - тетраэдр
         {
@@ -366,7 +201,6 @@ void Cell::volume()
         }
      case 115: // 115 - шестигранник
         {
-
         Point vec_17 = Edge::getVector(p[1], p[7]);
         Point vec_14 = Edge::getVector(p[1], p[4]);
         Point vec_10 = Edge::getVector(p[1], p[0]);
@@ -415,7 +249,7 @@ void Cell::volume()
 
 ////////////////////
 
-Mesh::Mesh(Point* p, unsigned int pCount)
+void Mesh::createPoints(Point* p, unsigned int pCount)
 {
         this->pCount = pCount;
         points = new Point[pCount];
@@ -425,7 +259,7 @@ Mesh::Mesh(Point* p, unsigned int pCount)
         }
     }
 
-Mesh::Mesh(const vector<Point>& p)
+void Mesh::createPoints(const vector<Point>& p)
 {
         this->pCount = p.size();
         points = new Point[pCount];
@@ -439,43 +273,14 @@ Mesh::~Mesh()
 {
         delete [] points;
 
-        for(list<Edge*>::iterator it = edges.begin(); it != edges.end(); ++it)
+        for(vector<Edge*>::iterator it = edges.begin(); it != edges.end(); ++it)
             delete (*it);
 
-         for(list<Face*>::iterator it = faces.begin(); it != faces.end(); ++it)
+         for(vector<Face*>::iterator it = faces.begin(); it != faces.end(); ++it)
             delete (*it);
 
          for(vector<Cell*>::iterator it = cells.begin(); it != cells.end(); ++it)
             delete (*it);
-    }
-
-void Mesh::createEdge(int ind1, int ind2)
-{
-        edges.push_back( new Edge(&points[ind1], &points[ind2]) );
-}
-
-// Создание треугольника
-void Mesh::createFace(int type, int ind1, int ind2 ,int ind3)
-{
-        faces.push_back( new Face(type, &points[ind1], &points[ind2], &points[ind3]) );
-}
-
-// Создание четырехугольника
-void Mesh::createFace(int type, int ind1, int ind2 ,int ind3 ,int ind4)
-{
-        faces.push_back( new Face(type, &points[ind1], &points[ind2], &points[ind3], &points[ind4]) );
-}
-
-// Создание тетраэдра
-void Mesh::createCell(int type, int ind1, int ind2, int ind3, int ind4)
-{
-        cells.push_back( new Cell(edges, faces, type, &points[ind1], &points[ind2], &points[ind3], &points[ind4]));
-}
-
-// Создание шестиугольника
-void Mesh::createCell(int type, int ind1, int ind2, int ind3, int ind4, int ind5, int ind6, int ind7, int ind8)
-{
-        cells.push_back( new Cell(edges, faces, type, &points[ind1], &points[ind2], &points[ind3], &points[ind4], &points[ind5], &points[ind6], &points[ind7], &points[ind8]) );
 }
 
 ////////////////////

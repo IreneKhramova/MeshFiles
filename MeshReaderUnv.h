@@ -1,7 +1,7 @@
 #ifndef MESHREADERUNV_H
 #define MESHREADERUNV_H
 
-#include "Mesh.h"
+#include "Mesh.cpp"
 #include <vector>
 #include <set>
 #include <map>
@@ -25,8 +25,8 @@ class MeshReaderUnv
 
         void read_block(vector<string>&, ifstream&);
         void parse_block(Mesh*, vector<string>&);
-        void parse_block_164(Mesh*, vector<string>);
-        void parse_block_2420(Mesh*, vector<string>);
+        void parse_block_164(Mesh*, vector<string>&);
+        void parse_block_2420(Mesh*, vector<string>&);
         void parse_block_2411(Mesh*, vector<string>&);
         void parse_block_2412(Mesh*, vector<string>&);
         void parse_block_2477(Mesh*, vector<string>&);

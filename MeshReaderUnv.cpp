@@ -21,12 +21,12 @@ void MeshReaderUnv::read_block(vector<string>& listOfstrings, ifstream& fin)
     }
 }
 
-void MeshReaderUnv::parse_block_164(Mesh* mesh, vector<string> listOfstrings)
+void MeshReaderUnv::parse_block_164(Mesh* mesh, vector<string> &listOfstrings)
 {
 
 }
 
-void MeshReaderUnv::parse_block_2420(Mesh* mesh, vector<string> listOfstrings)
+void MeshReaderUnv::parse_block_2420(Mesh* mesh, vector<string> &listOfstrings)
 {
 
 }
@@ -66,6 +66,8 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
     vector<string>::iterator it = listOfstrings.begin();
     ++it;
 
+    Face* face;
+    Edge* edge;
     int tmp[8];
     vector<int> p;
     while(it != listOfstrings.end())
@@ -74,14 +76,14 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
         sscanf(it->c_str(),"%d %d %d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3], &tmp[4], &tmp[5]);
         ++it;
 
-        switch(tmp[1])
+       switch(tmp[1])
         {
         case 21: {
                 ++it;
                 sscanf(it->c_str(),"%d %d", &tmp[0], &tmp[1]);
                 ++it;
 
-                Edge* edge = new Edge(&mesh->points[tmp[0] - 1], &mesh->points[tmp[1] - 1]);
+                edge = new Edge(&mesh->points[tmp[0] - 1], &mesh->points[tmp[1] - 1]);
                 mesh->edges.push_back(edge);
 
                 pEdge[tmp[0] - 1].insert(edge);
@@ -94,7 +96,7 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
                 sscanf(it->c_str(),"%d %d %d", &tmp[0], &tmp[1], &tmp[2]);
                 ++it;
 
-                Face* face = new Face(91, &mesh->points[tmp[0] - 1], &mesh->points[tmp[1] - 1], &mesh->points[tmp[2] - 1]);
+                face = new Face(91, &mesh->points[tmp[0] - 1], &mesh->points[tmp[1] - 1], &mesh->points[tmp[2] - 1]);
                 mesh->faces.push_back(face);
 
                 pFace[tmp[0] - 1][91].insert(face);
@@ -108,7 +110,7 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
                 sscanf(it->c_str(),"%d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3]);
                 ++it;
 
-                Face* face = new Face(94, &mesh->points[tmp[0] - 1], &mesh->points[tmp[1] - 1], &mesh->points[tmp[2] - 1], &mesh->points[tmp[3] - 1]);
+                face = new Face(94, &mesh->points[tmp[0] - 1], &mesh->points[tmp[1] - 1], &mesh->points[tmp[2] - 1], &mesh->points[tmp[3] - 1]);
                 mesh->faces.push_back(face);
 
                 pFace[tmp[0] - 1][94].insert(face);
@@ -128,6 +130,22 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
                 p.push_back(tmp[1] - 1);
                 p.push_back(tmp[2] - 1);
                 p.push_back(tmp[3] - 1);
+
+                cells.push_back(p);
+                break;
+        }
+
+        case 112: {
+                type_cells.push_back(112);
+                sscanf(it->c_str(),"%d %d %d %d %d %d %d %d", &tmp[0],&tmp[1],&tmp[2],&tmp[3],&tmp[4],&tmp[5]);
+                ++it;
+
+                p.push_back(tmp[0] - 1);
+                p.push_back(tmp[1] - 1);
+                p.push_back(tmp[2] - 1);
+                p.push_back(tmp[3] - 1);
+                p.push_back(tmp[4] - 1);
+                p.push_back(tmp[5] - 1);
 
                 cells.push_back(p);
                 break;
@@ -289,7 +307,6 @@ void MeshReaderUnv::read(Mesh* mesh)
     else { }
 
     int k;
-
     Cell* cell;
     Face* face;
     Edge* edge;
@@ -395,6 +412,99 @@ void MeshReaderUnv::read(Mesh* mesh)
 
              break;
          }
+
+         case 112:
+         {
+             cell = new Cell(*typeitc, &mesh->points[(*it)[0]], &mesh->points[(*it)[1]], &mesh->points[(*it)[2]], &mesh->points[(*it)[3]], &mesh->points[(*it)[4]], &mesh->points[(*it)[5]]);
+             mesh->cells.push_back(cell);
+
+             if( !(face = find_face(91, (*it)[0], (*it)[1], (*it)[2]) ) ) {
+                face = new Face(91, &mesh->points[(*it)[0]], &mesh->points[(*it)[1]], &mesh->points[(*it)[2]]);
+                mesh->faces.push_back(face);
+                pFace[(*it)[0]][91].insert(face);
+                pFace[(*it)[1]][91].insert(face);
+                pFace[(*it)[2]][91].insert(face);
+             }
+             mesh->cells.back()->f[0] = face;
+
+             if( !(face = find_face(91, (*it)[3], (*it)[4], (*it)[5]) ) ) {
+                face = new Face(91, &mesh->points[(*it)[3]], &mesh->points[(*it)[4]], &mesh->points[(*it)[5]]);
+                mesh->faces.push_back(face);
+                pFace[(*it)[3]][91].insert(face);
+                pFace[(*it)[4]][91].insert(face);
+                pFace[(*it)[5]][91].insert(face);
+             }
+             mesh->cells.back()->f[1] = face;
+
+             if( !(face = find_face(94, (*it)[0], (*it)[1], (*it)[4], (*it)[3]) ) ) {
+                face = new Face(94, &mesh->points[(*it)[0]], &mesh->points[(*it)[1]], &mesh->points[(*it)[3]], &mesh->points[(*it)[4]]);
+                mesh->faces.push_back(face);
+                pFace[(*it)[0]][94].insert(face);
+                pFace[(*it)[1]][94].insert(face);
+                pFace[(*it)[3]][94].insert(face);
+                pFace[(*it)[4]][94].insert(face);
+             }
+             mesh->cells.back()->f[2] = face;
+
+             if( !(face = find_face(94, (*it)[1], (*it)[2], (*it)[5], (*it)[4]) ) ) {
+                face = new Face(94, &mesh->points[(*it)[1]], &mesh->points[(*it)[2]], &mesh->points[(*it)[4]], &mesh->points[(*it)[5]]);
+                mesh->faces.push_back(face);
+                pFace[(*it)[1]][94].insert(face);
+                pFace[(*it)[2]][94].insert(face);
+                pFace[(*it)[4]][94].insert(face);
+                pFace[(*it)[5]][94].insert(face);
+             }
+             mesh->cells.back()->f[3] = face;
+
+             if( !(face = find_face(94, (*it)[2], (*it)[0], (*it)[3], (*it)[5]) ) ) {
+                face = new Face(94, &mesh->points[(*it)[2]], &mesh->points[(*it)[0]], &mesh->points[(*it)[3]], &mesh->points[(*it)[5]]);
+                mesh->faces.push_back(face);
+                pFace[(*it)[2]][94].insert(face);
+                pFace[(*it)[0]][94].insert(face);
+                pFace[(*it)[3]][94].insert(face);
+                pFace[(*it)[5]][94].insert(face);
+             }
+             mesh->cells.back()->f[4] = face;
+
+            int var;
+            for(k = 0; k < 3; k++) {
+
+                if( !(edge = find_edge((*it)[k],(*it)[(k+1)%3]) ) ) {
+                    edge = new Edge(&mesh->points[(*it)[k]], &mesh->points[(*it)[(k+1)%3]]);
+                    mesh->edges.push_back(edge);
+                    pEdge[(*it)[k]].insert(edge);
+                    pEdge[(*it)[(k+1)%3]].insert(edge);
+                }
+                mesh->cells.back()->e[k] = edge;
+
+                var = k + 4 < 6 ? k + 4 : 3;
+                if( !(edge = find_edge((*it)[k+3],(*it)[var]) ) ) {
+                    edge = new Edge(&mesh->points[(*it)[k+3]], &mesh->points[(*it)[var]]);
+                    mesh->edges.push_back(edge);
+                    pEdge[(*it)[k+3]].insert(edge);
+                    pEdge[(*it)[var]].insert(edge);
+                }
+                mesh->cells.back()->e[k+3] = edge;
+
+                if( !(edge = find_edge((*it)[k],(*it)[k+3]) ) ) {
+                    edge = new Edge(&mesh->points[(*it)[k]], &mesh->points[(*it)[k+3]]);
+                    mesh->edges.push_back(edge);
+                    pEdge[(*it)[k]].insert(edge);
+                    pEdge[(*it)[k+3]].insert(edge);
+                }
+                mesh->cells.back()->e[k+6] = edge;
+
+            }
+
+            mesh->cells.back()->f[0]->initFace(cell, mesh->cells.back()->e[0], mesh->cells.back()->e[1], mesh->cells.back()->e[2]);
+            mesh->cells.back()->f[1]->initFace(cell, mesh->cells.back()->e[3], mesh->cells.back()->e[4], mesh->cells.back()->e[5]);
+            mesh->cells.back()->f[2]->initFace(cell, mesh->cells.back()->e[0], mesh->cells.back()->e[7], mesh->cells.back()->e[3], mesh->cells.back()->e[6]);
+            mesh->cells.back()->f[3]->initFace(cell, mesh->cells.back()->e[1], mesh->cells.back()->e[7], mesh->cells.back()->e[4], mesh->cells.back()->e[8]);
+            mesh->cells.back()->f[4]->initFace(cell, mesh->cells.back()->e[2], mesh->cells.back()->e[6], mesh->cells.back()->e[5], mesh->cells.back()->e[8]);
+
+             break;
+         }
+
          case 115:
          {
             cell = new Cell(*typeitc, &mesh->points[(*it)[0]], &mesh->points[(*it)[1]], &mesh->points[(*it)[2]], &mesh->points[(*it)[3]], &mesh->points[(*it)[4]], &mesh->points[(*it)[5]], &mesh->points[(*it)[6]], &mesh->points[(*it)[7]]);
@@ -487,7 +597,6 @@ void MeshReaderUnv::read(Mesh* mesh)
                     pEdge[(*it)[k+4]].insert(edge);
                 }
                 mesh->cells.back()->e[k+8] = edge;
-
             }
 
             mesh->cells.back()->f[0]->initFace(cell, mesh->cells.back()->e[0], mesh->cells.back()->e[1], mesh->cells.back()->e[2], mesh->cells.back()->e[3]);

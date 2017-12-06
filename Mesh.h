@@ -2,9 +2,8 @@
 #define MESH_H
 
 #include <vector>
-#include <set>
-#include <list>
 #include <cmath>
+#include <cstdio>
 
 using namespace std;
 
@@ -28,6 +27,7 @@ private:
 public:
 	Edge(Point*, Point*);
     double getlength();
+    static double getlength(Point*, Point*);
     static Point getVector(Point*, Point*);
 };
 
@@ -56,7 +56,6 @@ class Face
 
     void area();
 
- friend class Mesh;
  friend class Cell;
 };
 
@@ -77,8 +76,9 @@ class Cell {
     double V;
 
  public:
-    Cell(int&, Point*, Point*, Point*, Point*);
-    Cell(int&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
+    Cell(const int&, Point*, Point*, Point*, Point*);
+    Cell(const int&, Point*, Point*, Point*, Point*, Point*, Point*);
+    Cell(const int&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
 
     ~Cell();
 

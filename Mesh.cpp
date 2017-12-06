@@ -13,6 +13,11 @@ double Edge::getlength()
     return sqrt( pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2) );
 }
 
+double Edge::getlength(Point* p1, Point* p2)
+{
+    return sqrt( pow(p1->x - p2->x, 2) + pow(p1->y - p2->y, 2) + pow(p1->z - p2->z, 2) );
+}
+
 Point Edge::getVector(Point* p1, Point* p2)
 {
     Point vec;
@@ -114,20 +119,22 @@ void Face::area()
             double c = e[2]->getlength();
 
             double pp = (a + b + c)/2;
+
             S = sqrt(pp*(pp-a)*(pp-b)*(pp-c));
         break;
       }
       case 94: // четырехугольник ( код формата unv - 94)
       {
-            double a = e[0]->getlength();
-            double b = e[1]->getlength();
-            double c = e[2]->getlength();
-            double d = e[3]->getlength();
+            double a = Edge::getlength(p[0], p[1]);
+            double b = Edge::getlength(p[1], p[2]);
+            double diag = Edge::getlength(p[0], p[2]);
+            double c = Edge::getlength(p[2], p[3]);
+            double d = Edge::getlength(p[3], p[0]);
 
-            double p1 = (a + b + c)/2;
-            double p2 = (a + d + c)/2;
+            double p1 = (a + b + diag)/2;
+            double p2 = (c + d + diag)/2;
 
-            S = sqrt(p1*(p1-a)*(p1-b)*(p1-c)) + sqrt(p2*(p2-a)*(p2-d)*(p2-c));
+            S = sqrt(p1*(p1-a)*(p1-b)*(p1-diag)) + sqrt(p2*(p2-c)*(p2-d)*(p2-diag));
         break;
       }
     }
@@ -143,7 +150,7 @@ Cell::~Cell()
     delete [] f;
 }
 
-Cell::Cell(int& type, Point* p1, Point* p2, Point* p3, Point* p4)
+Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4)
 {
     this->type = type;
     pCount = 4;
@@ -160,7 +167,26 @@ Cell::Cell(int& type, Point* p1, Point* p2, Point* p3, Point* p4)
     p[3] = p4;
 }
 
-Cell::Cell(int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6, Point* p7, Point* p8)
+Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6)
+{
+    this->type = type;
+    pCount = 6;
+    eCount = 9;
+    fCount = 5;
+
+    p = new Point*[pCount];
+    e = new Edge*[eCount];
+    f = new Face*[fCount];
+
+    p[0] = p1;
+    p[1] = p2;
+    p[2] = p3;
+    p[3] = p4;
+    p[4] = p5;
+    p[5] = p6;
+}
+
+Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6, Point* p7, Point* p8)
 {
     this->type = type;
     pCount = 8;
@@ -199,6 +225,13 @@ void Cell::volume()
 
         break;
         }
+
+     case 112:
+        {
+
+         break;
+        }
+
      case 115: // 115 - шестигранник
         {
         Point vec_17 = Edge::getVector(p[1], p[7]);

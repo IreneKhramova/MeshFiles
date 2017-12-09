@@ -437,7 +437,7 @@ void MeshReaderUnv::read(Mesh* mesh)
              mesh->cells.back()->f[1] = face;
 
              if( !(face = find_face(94, (*it)[0], (*it)[1], (*it)[4], (*it)[3]) ) ) {
-                face = new Face(94, &mesh->points[(*it)[0]], &mesh->points[(*it)[1]], &mesh->points[(*it)[3]], &mesh->points[(*it)[4]]);
+                face = new Face(94, &mesh->points[(*it)[0]], &mesh->points[(*it)[1]], &mesh->points[(*it)[4]], &mesh->points[(*it)[3]]);
                 mesh->faces.push_back(face);
                 pFace[(*it)[0]][94].insert(face);
                 pFace[(*it)[1]][94].insert(face);
@@ -447,7 +447,7 @@ void MeshReaderUnv::read(Mesh* mesh)
              mesh->cells.back()->f[2] = face;
 
              if( !(face = find_face(94, (*it)[1], (*it)[2], (*it)[5], (*it)[4]) ) ) {
-                face = new Face(94, &mesh->points[(*it)[1]], &mesh->points[(*it)[2]], &mesh->points[(*it)[4]], &mesh->points[(*it)[5]]);
+                face = new Face(94, &mesh->points[(*it)[1]], &mesh->points[(*it)[2]], &mesh->points[(*it)[5]], &mesh->points[(*it)[4]]);
                 mesh->faces.push_back(face);
                 pFace[(*it)[1]][94].insert(face);
                 pFace[(*it)[2]][94].insert(face);

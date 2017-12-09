@@ -101,7 +101,7 @@ private:
     vector<Cell*> cells;
 
 public:
-
+	Mesh() {}
     ~Mesh();
 
     void createPoints(Point*, unsigned int);

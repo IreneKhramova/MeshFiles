@@ -137,7 +137,7 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
 
         case 112: {
                 type_cells.push_back(112);
-                sscanf(it->c_str(),"%d %d %d %d %d %d %d %d", &tmp[0],&tmp[1],&tmp[2],&tmp[3],&tmp[4],&tmp[5]);
+                sscanf(it->c_str(),"%d %d %d %d %d %d", &tmp[0],&tmp[1],&tmp[2],&tmp[3],&tmp[4],&tmp[5]);
                 ++it;
 
                 p.push_back(tmp[0] - 1);

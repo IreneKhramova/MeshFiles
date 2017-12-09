@@ -364,7 +364,25 @@ void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
 	fprintf(out, "CELL_TYPES %d\n", cellCount);
 	for (int i = 0; i < cellCount; i++)
 	{
-		fprintf(out, "12\n"); //12 - VTK_HEXAHEDRON
+		switch (mesh->cells[i]->pCount)
+		{
+			case 4:
+			{
+				fprintf(out, "10\n"); //10 - VTK_TETRA
+				break;
+			}
+			case 6:
+			{
+				fprintf(out, "13\n"); //13 - VTK_WEDGE
+				break;
+			}
+			case 8:
+			{
+				fprintf(out, "12\n"); //12 - VTK_HEXAHEDRON
+				break;
+			}
+		}
+
 	}
 	fclose(out);
 }

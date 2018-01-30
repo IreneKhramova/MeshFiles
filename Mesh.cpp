@@ -57,7 +57,7 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3)
 
 void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3)
 {
-	if (countOfUsing == 2) { // инициализируем в первый раз
+	if (countOfUsing == 2) { // РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РІ РїРµСЂРІС‹Р№ СЂР°Р·
 
 		e[0] = e1;
 		e[1] = e2;
@@ -92,7 +92,7 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3, Point* p4)
 
 void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3, Edge* e4)
 {
-	if (countOfUsing == 2) { // инициализируем в первый раз
+	if (countOfUsing == 2) { // РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РІ РїРµСЂРІС‹Р№ СЂР°Р·
 
 		e[0] = e1;
 		e[1] = e2;
@@ -107,13 +107,13 @@ void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3, Edge* e4)
 	countOfUsing--;
 }
 
-// Вычисление площади грани
+// Р’С‹С‡РёСЃР»РµРЅРёРµ РїР»РѕС‰Р°РґРё РіСЂР°РЅРё
 void Face::area()
 {
 	S = 0;
 	switch (type)
 	{
-	case 91: // треугольник( код формата unv - 91)
+	case 91: // С‚СЂРµСѓРіРѕР»СЊРЅРёРє( РєРѕРґ С„РѕСЂРјР°С‚Р° unv - 91)
 	{
 		double a = e[0]->getlength();
 		double b = e[1]->getlength();
@@ -124,7 +124,7 @@ void Face::area()
 		S = sqrt(pp*(pp - a)*(pp - b)*(pp - c));
 		break;
 	}
-	case 94: // четырехугольник ( код формата unv - 94)
+	case 94: // С‡РµС‚С‹СЂРµС…СѓРіРѕР»СЊРЅРёРє ( РєРѕРґ С„РѕСЂРјР°С‚Р° unv - 94)
 	{
 		double a = Edge::getlength(p[0], p[1]);
 		double b = Edge::getlength(p[1], p[2]);
@@ -208,14 +208,14 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p
 	p[7] = p8;
 }
 
-// Вычисление объема клетки
+// Р’С‹С‡РёСЃР»РµРЅРёРµ РѕР±СЉРµРјР° РєР»РµС‚РєРё
 void Cell::volume()
 {
 	V = 0;
 
 	switch (type) {
 
-	case 111: // 111 - тетраэдр
+	case 111: // 111 - С‚РµС‚СЂР°СЌРґСЂ
 	{
 
 		Point vec_a = Edge::getVector(p[0], p[1]);
@@ -233,7 +233,7 @@ void Cell::volume()
 		break;
 	}
 
-	case 115: // 115 - шестигранник
+	case 115: // 115 - С€РµСЃС‚РёРіСЂР°РЅРЅРёРє
 	{
 		Point vec_17 = Edge::getVector(p[1], p[7]);
 		Point vec_14 = Edge::getVector(p[1], p[4]);

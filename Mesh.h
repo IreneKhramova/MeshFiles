@@ -45,7 +45,7 @@ private:
 	int type;
 	Point** p;
 	Edge** e;
-	Cell* c[2]; // указатель на смежный Face
+	Cell* c[2]; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃРјРµР¶РЅС‹Р№ Face
 	int pCount;
 	int eCount;
 	int countOfUsing;

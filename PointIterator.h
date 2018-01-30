@@ -10,7 +10,7 @@ private:
 	Point* t;
 	PointIterator(Point* t) : t(t) {}
 public:
-	// Операции, необходимые для всех категорий итераторов.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ РІСЃРµС… РєР°С‚РµРіРѕСЂРёР№ РёС‚РµСЂР°С‚РѕСЂРѕРІ.
 	PointIterator() = default;
 	PointIterator(const PointIterator&) = default;
 	PointIterator& operator=(const PointIterator&) = default;
@@ -19,26 +19,26 @@ public:
 	PointIterator& operator++() { t++; return *this; }
 	PointIterator operator++(int) { auto old = *this; ++(*this); return old; }
 
-	// Операции, необходимые для InputIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ InputIterator.
 	pointer operator->() const { return t; }
 
-	// Операции, необходимые для BidirectionalIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ BidirectionalIterator.
 	PointIterator& operator--() { t--; return *this; }
 	PointIterator operator--(int) { auto old = *this; --(*this); return old; }
 
-	// Операции, необходимые для RandomAccessIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ RandomAccessIterator.
 	reference operator[](difference_type n) const { auto tmp = *this; tmp += n; return *tmp; }
 	PointIterator& operator+=(difference_type n) { t += n; return *this; }
 	PointIterator& operator-=(difference_type n) { return *this += -n; }
 
-	// Операции, необходимые для всех категорий итераторов.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ РІСЃРµС… РєР°С‚РµРіРѕСЂРёР№ РёС‚РµСЂР°С‚РѕСЂРѕРІ.
 	void swap(PointIterator& a, PointIterator& b) { std::swap(a.t, b.t); }
 
-	// Операции, необходимые для InputIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ InputIterator.
 	bool operator==(const PointIterator& other) { return t == other.t; }
 	bool operator!=(const PointIterator& other) { return !(*this == other); }
 
-	// Операции, необходимые для RandomAccessIterator.
+	// РћРїРµСЂР°С†РёРё, РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР»СЏ RandomAccessIterator.
 	bool operator<(const PointIterator& other) { return (t - other.t) < 0; }
 	bool operator>(const PointIterator& other) { return (t - other.t) > 0; }
 	bool operator<=(const PointIterator& other) { return !(*this > other); }

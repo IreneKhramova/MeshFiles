@@ -2,11 +2,9 @@
 #define MESH_H
 
 #include <vector>
-#include <set>
-#include <list>
 #include <cmath>
+#include <cstdio>
 
-class CellIterator;
 class PointIterator;
 
 template <class T>
@@ -24,72 +22,101 @@ public:
 
 
 ///////////////////////
+
+class Cell;
+
 class Edge
 {
 private:
 	Point* p[2];
-	int countOfUsing;
 
 public:
 	Edge(Point*, Point*);
 	double getlength();
-
-	friend class Cell;
+	static double getlength(Point*, Point*);
+	static Point getVector(Point*, Point*);
 };
 
-
 ////////////////////////
+
 class Face
 {
 private:
-	Point* p[4];
-	Edge* e[4];
+	int type;
+	Point** p;
+	Edge** e;
+	Cell* c[2]; // указатель на смежный Face
+	int pCount;
+	int eCount;
 	int countOfUsing;
+	double S;
 
 public:
-	Face(Point*, Point*, Point*, Point*);
-	void initFace(Edge*, Edge*, Edge*, Edge*);
+	Face(const int&, Point*, Point*, Point*);
+	Face(const int&, Point*, Point*, Point*, Point*);
+
+	~Face();
+
+	void initFace(Cell*, Edge*, Edge*, Edge*);
+	void initFace(Cell*, Edge*, Edge*, Edge*, Edge*);
+
+	void area();
 
 	friend class Cell;
 };
 
 ///////////////////
+
+class Mesh;
+
 class Cell
 {
 private:
-	Point* p[8];
-	Edge* e[12];
-	Face* f[6];
-
-	Edge* getEdge(list<Edge*>&, Point*, Point*);
-	Face* getFace(list<Face*>&, Point*, Point*, Point*, Point*);
+	int type;
+	Point** p;
+	Edge** e;
+	Face** f;
+	int pCount;
+	int eCount;
+	int fCount;
+	double V;
 
 public:
-	Cell(list<Edge*>&, list<Face*>&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
+	Cell(const int&, Point*, Point*, Point*, Point*);
+	Cell(const int&, Point*, Point*, Point*, Point*, Point*, Point*);
+	Cell(const int&, Point*, Point*, Point*, Point*, Point*, Point*, Point*, Point*);
 
+	~Cell();
+
+	void volume();
+
+	friend class Mesh;
+	friend class MeshReaderUnv;
 };
 
 //////////////
+
 class Mesh
 {
 private:
 	Point* points;
 	unsigned int pCount;
-	list<Edge*> edges;
-	list<Face*> faces;
+	vector<Edge*> edges;
+	vector<Face*> faces;
 	vector<Cell*> cells;
 
 public:
-	Mesh(Point*, unsigned int);
+	Mesh() {};
 	~Mesh();
 
-	void createEdge(int, int);
-	void createFace(int, int, int, int);
-	void createCell(int, int, int, int, int, int, int, int);
+	void createPoints(Point*, unsigned int);
+	void createPoints(const vector<Point>&);
+
+	friend class MeshReaderUnv;
 
 	typedef MeshIterator<Face> FaceIterator;
 	typedef MeshIterator<Edge> EdgeIterator;
-	typedef CellIterator CellIterator;
+	typedef MeshIterator<Cell> CellIterator;
 	typedef PointIterator PointIterator;
 
 	CellIterator beginCell();

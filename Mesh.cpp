@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "MeshReaderUnv.h"
 #include "MeshIterator.h"
 #include "PointIterator.h"
 
@@ -327,11 +328,133 @@ Mesh::EdgeIterator Mesh::beginEdge() { return EdgeIterator(edges.begin()); }
 Mesh::EdgeIterator Mesh::endEdge() { return EdgeIterator(edges.end()); }
 
 PointIterator Mesh::beginPoint() { return PointIterator(points); }
-PointIterator Mesh::endPoint() { return PointIterator(&points[pCount+1]); }
+PointIterator Mesh::endPoint() { return PointIterator(&points[pCount]); }
 
-//int main()
-//{
-//	Mesh* msh = new Mesh();
-//	MeshReaderUnv mru("EFE3.unv");
-//	mru.read(msh);
-//}
+void Mesh::iterateCells(iterateCellsFunc f)
+{
+	for (CellIterator it = this->beginCell(); it != this->endCell(); it++)
+	{
+		f(&(*it));
+	}
+}
+
+void Mesh::iterateFaces(iterateFacesFunc f)
+{
+	for (FaceIterator it = this->beginFace(); it != this->endFace(); it++)
+	{
+		f(&(*it));
+	}
+}
+
+void Mesh::iterateEdges(iterateEdgesFunc f)
+{
+	for (EdgeIterator it = this->beginEdge(); it != this->endEdge(); it++)
+	{
+		f(&(*it));
+	}
+}
+
+void Mesh::iteratePoints(iteratePointsFunc f)
+{
+	for (PointIterator it = this->beginPoint(); it != this->endPoint(); it++)
+	{
+		f(&(*it));
+	}
+}
+
+////////////////////
+
+void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
+{
+	FILE *out;
+	out = fopen(filename, "w");
+	fprintf(out, "# vtk DataFile Version 3.0\n");
+	fprintf(out, "Mesh_test\n");
+	fprintf(out, "ASCII\n");
+	fprintf(out, "DATASET UNSTRUCTURED_GRID\n");
+	fprintf(out, "POINTS %d double\n", mesh->pCount);
+	for (int i = 0; i < mesh->pCount; i++)
+	{
+		fprintf(out, "%f %f %f\n", mesh->points[i].x, mesh->points[i].y, mesh->points[i].z);
+	}
+
+	int cellCount = mesh->cells.size();
+
+	int cellSize = 0;//the size of the cell list (count of points in all cells)
+	for (int i = 0; i < cellCount; i++)
+	{
+		cellSize += mesh->cells[i]->pCount;
+	}
+
+	/*
+	cellSize + cellCount :
+	cellSize + one number for each cell - count of points in this cell
+	*/
+	fprintf(out, "CELLS %d %d\n", cellCount, cellSize + cellCount);
+	for (int i = 0; i < cellCount; i++)
+	{
+		fprintf(out, "%d", mesh->cells[i]->pCount);
+		for (int k = 0; k < mesh->cells[i]->pCount; k++)
+		{
+			int ind = -1;
+			Point* addr = mesh->cells[i]->p[k];
+			for (int j = 0; j < mesh->pCount; j++)
+			{
+				if (&(mesh->points[j]) == addr)
+					ind = j;
+			}
+			fprintf(out, " %d", ind);
+		}
+		fprintf(out, "\n");
+	}
+	fprintf(out, "CELL_TYPES %d\n", cellCount);
+	for (int i = 0; i < cellCount; i++)
+	{
+		switch (mesh->cells[i]->pCount)
+		{
+		case 4:
+		{
+			fprintf(out, "10\n"); //10 - VTK_TETRA
+			break;
+		}
+		case 6:
+		{
+			fprintf(out, "13\n"); //13 - VTK_WEDGE
+			break;
+		}
+		case 8:
+		{
+			fprintf(out, "12\n"); //12 - VTK_HEXAHEDRON
+			break;
+		}
+		}
+
+	}
+	fclose(out);
+}
+
+///////////////////////////////
+
+/*int pointC = 0;
+void funcCells(Cell *c)
+{
+	pointC++;
+}
+
+void funcPoints(Point *p)
+{
+	std::cout << p->x << std::endl;
+}
+
+int main()
+{
+	Mesh* msh = new Mesh();
+	MeshReaderUnv mru("exampleForExample.unv");
+	mru.read(msh);
+
+	msh->iteratePoints(&funcPoints);
+	msh->iterateCells(&funcCells);
+	cout << pointC << endl;
+	vtkWriteUnstructuredGrid("mesh.vtk", msh);
+	system("pause");
+}*/

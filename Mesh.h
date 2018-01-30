@@ -5,6 +5,24 @@
 #include <cmath>
 #include <cstdio>
 
+class PointIterator;
+
+template <class T>
+class MeshIterator;
+
+class Point;
+class Edge;
+class Face;
+class Cell;
+/* Callback - функция для iterateCells() */
+typedef void(*iterateCellsFunc)(Cell*);
+/* Callback - функция для iterateFaces() */
+typedef void(*iterateFacesFunc)(Face*);
+/* Callback - функция для iterateEdges() */
+typedef void(*iterateEdgesFunc)(Edge*);
+/* Callback - функция для iteratePoints() */
+typedef void(*iteratePointsFunc)(Point*);
+
 using namespace std;
 
 class Point
@@ -110,6 +128,28 @@ public:
     friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
 
     friend class MeshReaderUnv;
+
+	typedef MeshIterator<Face> FaceIterator;
+	typedef MeshIterator<Edge> EdgeIterator;
+	typedef MeshIterator<Cell> CellIterator;
+	typedef PointIterator PointIterator;
+
+	CellIterator beginCell();
+	CellIterator endCell();
+
+	FaceIterator beginFace();
+	FaceIterator endFace();
+
+	EdgeIterator beginEdge();
+	EdgeIterator endEdge();
+
+	PointIterator beginPoint();
+	PointIterator endPoint();
+
+	void iterateCells(iterateCellsFunc);
+	void iterateFaces(iterateFacesFunc);
+	void iterateEdges(iterateEdgesFunc);
+	void iteratePoints(iteratePointsFunc);
 };
 
 #endif // MESH_H

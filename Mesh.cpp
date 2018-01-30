@@ -1,5 +1,7 @@
 #include "Mesh.h"
 #include "MeshReaderUnv.h"
+#include "MeshIterator.h"
+#include "PointIterator.h"
 
 ///////////////////////
 
@@ -11,12 +13,12 @@ Edge::Edge(Point* p1, Point* p2)
 
 double Edge::getlength()
 {
-    return sqrt( pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2) );
+	return sqrt(pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2));
 }
 
 double Edge::getlength(Point* p1, Point* p2)
 {
-    return sqrt( pow(p1->x - p2->x, 2) + pow(p1->y - p2->y, 2) + pow(p1->z - p2->z, 2) );
+	return sqrt(pow(p1->x - p2->x, 2) + pow(p1->y - p2->y, 2) + pow(p1->z - p2->z, 2));
 }
 
 Point Edge::getVector(Point* p1, Point* p2)
@@ -317,6 +319,50 @@ Mesh::~Mesh()
             delete (*it);
 }
 
+Mesh::CellIterator Mesh::beginCell() { return CellIterator(cells.begin()); }
+Mesh::CellIterator Mesh::endCell() { return CellIterator(cells.end()); }
+
+Mesh::FaceIterator Mesh::beginFace() { return FaceIterator(faces.begin()); }
+Mesh::FaceIterator Mesh::endFace() { return FaceIterator(faces.end()); }
+
+Mesh::EdgeIterator Mesh::beginEdge() { return EdgeIterator(edges.begin()); }
+Mesh::EdgeIterator Mesh::endEdge() { return EdgeIterator(edges.end()); }
+
+PointIterator Mesh::beginPoint() { return PointIterator(points); }
+PointIterator Mesh::endPoint() { return PointIterator(&points[pCount]); }
+
+void Mesh::iterateCells(iterateCellsFunc f)
+{
+	for (CellIterator it = this->beginCell(); it != this->endCell(); it++)
+	{
+		f(&(*it));
+	}
+}
+
+void Mesh::iterateFaces(iterateFacesFunc f)
+{
+	for (FaceIterator it = this->beginFace(); it != this->endFace(); it++)
+	{
+		f(&(*it));
+	}
+}
+
+void Mesh::iterateEdges(iterateEdgesFunc f)
+{
+	for (EdgeIterator it = this->beginEdge(); it != this->endEdge(); it++)
+	{
+		f(&(*it));
+	}
+}
+
+void Mesh::iteratePoints(iteratePointsFunc f)
+{
+	for (PointIterator it = this->beginPoint(); it != this->endPoint(); it++)
+	{
+		f(&(*it));
+	}
+}
+
 ////////////////////
 
 void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
@@ -335,7 +381,7 @@ void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
 
 	int cellCount = mesh->cells.size();
 
-	int cellSize=0;//the size of the cell list (count of points in all cells)
+	int cellSize = 0;//the size of the cell list (count of points in all cells)
 	for (int i = 0; i < cellCount; i++)
 	{
 		cellSize += mesh->cells[i]->pCount;
@@ -387,3 +433,29 @@ void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
 	}
 	fclose(out);
 }
+
+///////////////////////////////
+
+/*int pointC = 0;
+void funcCells(Cell *c)
+{
+	pointC++;
+}
+
+void funcPoints(Point *p)
+{
+	std::cout << p->x << std::endl;
+}
+
+int main()
+{
+	Mesh* msh = new Mesh();
+	MeshReaderUnv mru("exampleForExample.unv");
+	mru.read(msh);
+
+	msh->iteratePoints(&funcPoints);
+	msh->iterateCells(&funcCells);
+	cout << pointC << endl;
+	vtkWriteUnstructuredGrid("mesh.vtk", msh);
+	system("pause");
+}*/

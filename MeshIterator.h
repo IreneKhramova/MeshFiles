@@ -33,9 +33,6 @@ public:
 	MeshIterator& operator-=(difference_type n) { return *this += -n; }
 	reference operator[](difference_type n) const { auto tmp = *this; tmp += n; return *tmp; }
 
-	// Операции, необходимые для всех категорий итераторов.
-	void swap(MeshIterator& a, MeshIterator& b) { std::swap(a.it, b.it); }
-
 	// Операции, необходимые для InputIterator.
 	bool operator==(const MeshIterator& other) { return it == other.it; }
 	bool operator!=(const MeshIterator& other) { return !(*this == other); }

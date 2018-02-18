@@ -2,6 +2,7 @@
 #include "MeshReaderUnv.h"
 #include "MeshIterator.h"
 #include "PointIterator.h"
+#include "FilterIterator.h"
 
 ///////////////////////
 
@@ -285,6 +286,11 @@ void Cell::volume()
 
 ////////////////////
 
+bool IsBoundaryFace::operator()(Face* f) { Cell** c = f->getCells(); return (c[0] == NULL || c[1] == NULL); }
+bool IsInnerFace::operator()(Face* f) { Cell** c = f->getCells(); return (c[0] != NULL && c[1] != NULL); }
+
+////////////////////
+
 void Mesh::createPoints(Point* p, unsigned int pCount)
 {
         this->pCount = pCount;
@@ -330,6 +336,14 @@ Mesh::EdgeIterator Mesh::endEdge() { return EdgeIterator(edges.end()); }
 
 PointIterator Mesh::beginPoint() { return PointIterator(points); }
 PointIterator Mesh::endPoint() { return PointIterator(&points[pCount]); }
+
+IsBoundaryFace predicateBoundary;
+Mesh::BoundaryFaceIterator Mesh::beginBoundaryFace() { return BoundaryFaceIterator(predicateBoundary, this->beginFace(), this->endFace(), this->beginFace()); }
+Mesh::BoundaryFaceIterator Mesh::endBoundaryFace() { return BoundaryFaceIterator(predicateBoundary, this->beginFace(), this->endFace(), this->endFace()); }
+
+IsInnerFace predicateInner;
+Mesh::InnerFaceIterator Mesh::beginInnerFace() { return InnerFaceIterator(predicateInner, this->beginFace(), this->endFace(), this->beginFace()); }
+Mesh::InnerFaceIterator Mesh::endInnerFace() { return InnerFaceIterator(predicateInner, this->beginFace(), this->endFace(), this->endFace()); }
 
 void Mesh::iterateCells(iterateCellsFunc f)
 {
@@ -446,16 +460,34 @@ void funcPoints(Point *p)
 {
 	std::cout << p->x << std::endl;
 }
-
+*/
 int main()
 {
 	Mesh* msh = new Mesh();
 	MeshReaderUnv mru("exampleForExample.unv");
 	mru.read(msh);
 
-	msh->iteratePoints(&funcPoints);
+	/*msh->iteratePoints(&funcPoints);
 	msh->iterateCells(&funcCells);
-	cout << pointC << endl;
-	vtkWriteUnstructuredGrid("mesh.vtk", msh);
+	cout << pointC << endl;*/
+	int k = 0;
+	/*for (Mesh::BoundaryFaceIterator it = msh->beginBoundaryFace(); it != msh->endBoundaryFace(); it++) {
+		k++;
+	}*/
+	/*for (Mesh::FaceIterator it = msh->beginFace(); it != msh->endFace(); it++) {
+		k++;
+	}*/
+	//Why is it so slow?
+	//for (Mesh::InnerFaceIterator it = msh->endInnerFace(); it != msh->beginInnerFace(); /*it--*/) {
+	//	--it;
+	//	k++;
+	//	if (k == 71)
+	//		cout << "yes\n";
+	//}
+	for (Mesh::InnerFaceIterator it = msh->beginInnerFace(); it != msh->endInnerFace(); it++) {
+		k++;
+	}
+	cout << k << "\n";
+	//vtkWriteUnstructuredGrid("mesh.vtk", msh);
 	system("pause");
-}*/
+}

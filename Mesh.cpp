@@ -286,8 +286,8 @@ void Cell::volume()
 
 ////////////////////
 
-bool IsBoundaryFace::operator()(Face* f) { Cell** c = f->getCells(); return (c[0] == NULL || c[1] == NULL); }
-bool IsInnerFace::operator()(Face* f) { Cell** c = f->getCells(); return (c[0] != NULL && c[1] != NULL); }
+bool IsBoundaryFace::operator()(Face* f) { Cell** c = f->getCells(); return (c[1] == NULL); }
+bool IsInnerFace::operator()(Face* f) { Cell** c = f->getCells(); return (c[1] != NULL); }
 
 ////////////////////
 

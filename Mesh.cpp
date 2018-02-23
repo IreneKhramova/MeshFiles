@@ -583,6 +583,11 @@ void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
 		}
 
 	}
+	fprintf(out, "CELL_DATA %d\nSCALARS temperature float 1\nLOOKUP_TABLE default\n", cellCount);
+	for (int i = 0; i < cellCount; i++)
+	{
+		fprintf(out, "%f\n", mesh->cells[i]->T);
+	}
 	fclose(out);
 }
 
@@ -598,16 +603,13 @@ void funcPoints(Point *p)
 {
 	std::cout << p->x << std::endl;
 }
-
+*/
 int main()
 {
 	Mesh* msh = new Mesh();
-	MeshReaderUnv mru("exampleForExample.unv");
+	MeshReaderUnv mru("FItsad.unv");
 	mru.read(msh);
 
-	msh->iteratePoints(&funcPoints);
-	msh->iterateCells(&funcCells);
-	cout << pointC << endl;
 	vtkWriteUnstructuredGrid("mesh.vtk", msh);
 	system("pause");
-}*/
+}

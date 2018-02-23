@@ -13,7 +13,7 @@ public:
 
 	FilterIterator() = default;
 	FilterIterator(const FilterIterator&) = default;
-	FilterIterator(Predicate f, Iterator begin, Iterator end, Iterator it) : m_pred(f), m_iter(it), m_end(end), m_begin(begin)
+	FilterIterator(Predicate f, Iterator begin, Iterator end, Iterator it) : m_pred(f), m_begin(begin), m_end(end), m_iter(it)
 	{
 		satisfyPredicateIncrement();
 	}
@@ -32,10 +32,14 @@ public:
 		return m_iter;
 	}
 
+	/* This is so slow */
 	FilterIterator& operator--()
 	{
-		--m_iter;
-		satisfyPredicateDecrement();
+		for (--m_iter; m_iter != m_begin; --m_iter)
+		{
+			if (m_pred(&(*m_iter)))
+				break;
+		}
 		return *this;
 	}
 	FilterIterator operator--(int) { auto old = *this; --(*this); return old; }
@@ -51,16 +55,10 @@ private:
 
 	void satisfyPredicateIncrement()
 	{
-		while (m_iter != m_end && !m_pred(&(*m_iter)))
+		for ( ; m_iter != m_end; ++m_iter)
 		{
-			++m_iter;
-		}
-	}
-	void satisfyPredicateDecrement()
-	{
-		while (m_iter != m_begin && !m_pred(&(*m_iter)))
-		{
-			--m_iter;
+			if (m_pred(&(*m_iter)))
+				break;
 		}
 	}
 };

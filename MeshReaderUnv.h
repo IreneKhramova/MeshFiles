@@ -21,7 +21,7 @@ class MeshReaderUnv
         vector<map<int, set<Face*> > > pFace;
         vector<vector<int> > cells;
         vector<int> type_cells;
-        map<string, vector<int> > bnd_cond;
+        map<int, Face*> bnd_cond;
 
         void read_block(vector<string>&, ifstream&);
         void parse_block(Mesh*, vector<string>&);

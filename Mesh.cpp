@@ -5,6 +5,42 @@
 
 ///////////////////////
 
+Point Point::operator+(Point b) const
+{
+    Point vec;
+
+    vec.x = this->x + b.x;
+    vec.y = this->y + b.y;
+    vec.z = this->z + b.z;
+
+    return vec;
+}
+
+Point Point::operator/(double lyambda) const
+{
+    Point vec;
+
+    vec.x = this->x / lyambda;
+    vec.y = this->y / lyambda;
+    vec.z = this->z / lyambda;
+
+    return vec;
+}
+
+double Point::scalar_product(Point vec1, Point vec2)
+{
+    return vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z;
+}
+
+void Point::normalize(Point* p1)
+{
+    double norm = sqrt(p1->x * p1->x + p1->y * p1->y + p1->z * p1->z);
+
+    p1->x /= norm;
+    p1->y /= norm;
+    p1->z /= norm;
+}
+
 Edge::Edge(Point* p1, Point* p2)
 {
     p[0] = p1;
@@ -55,6 +91,15 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3)
     p[0] = p1;
     p[1] = p2;
     p[2] = p3;
+
+    Point vec1 = Edge::getVector(p[0],p[1]);
+    Point vec2 = Edge::getVector(p[0],p[2]);
+
+    n.x = vec1.y*vec2.z - vec1.z*vec2.y;
+    n.y = vec1.z*vec2.x - vec1.x*vec2.z;
+    n.z = vec1.x*vec2.y - vec1.y*vec2.x;
+
+    Point::normalize(&n);
 }
 
 void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3)
@@ -90,6 +135,15 @@ Face::Face(const int& type, Point* p1, Point* p2, Point* p3, Point* p4)
     p[1] = p2;
     p[2] = p3;
     p[3] = p4;
+
+    Point vec1 = Edge::getVector(p[0],p[1]);
+    Point vec2 = Edge::getVector(p[0],p[2]);
+
+    n.x = vec1.y*vec2.z - vec1.z*vec2.y;
+    n.y = vec1.z*vec2.x - vec1.x*vec2.z;
+    n.z = vec1.x*vec2.y - vec1.y*vec2.x;
+
+    Point::normalize(&n);
 }
 
 void Face::initFace(Cell* c, Edge* e1, Edge* e2, Edge* e3, Edge* e4)
@@ -143,6 +197,34 @@ void Face::area()
     }
 }
 
+// Вычисление расстояние между центрами
+void Face::calc_h() {
+
+    Point center1 = c[0]->center;
+
+    if(c[1] != 0) {
+
+        Point center2 = c[1]->center;
+        h = Edge::getlength(&center1, &center2);
+    }
+    else {
+
+        Point vec1 = Edge::getVector(p[0],p[1]);
+        Point vec2 = Edge::getVector(p[0],p[2]);
+
+        Point ort_vec;
+        ort_vec.x = vec1.y*vec2.z - vec1.z*vec2.y;
+        ort_vec.y = vec1.z*vec2.x - vec1.x*vec2.z;
+        ort_vec.z = vec1.x*vec2.y - vec1.y*vec2.x;
+
+        Point::normalize(&ort_vec);
+
+        Point vec_res = Edge::getVector(p[0], &(c[0]->center));
+
+        h = 2 * abs(Point::scalar_product(vec_res, ort_vec));
+    }
+}
+
 ///////////////////
 
 
@@ -168,6 +250,9 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4)
     p[1] = p2;
     p[2] = p3;
     p[3] = p4;
+
+    center = (*p[0] + *p[1] + *p[2] + *p[3]) / 4;
+    T = 293;
 }
 
 Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6)
@@ -187,6 +272,8 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p
     p[3] = p4;
     p[4] = p5;
     p[5] = p6;
+
+    center = (*p[0] + *p[1] + *p[2] + *p[3] + *p[4] + *p[5]) / 6;
 }
 
 Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6, Point* p7, Point* p8)
@@ -208,6 +295,8 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p
     p[5] = p6;
     p[6] = p7;
     p[7] = p8;
+
+    center = (*p[0] + *p[1] + *p[2] + *p[3] + *p[4] + *p[5] + *p[6] + *p[7]) / 8;
 }
 
 // Вычисление объема клетки
@@ -231,6 +320,21 @@ void Cell::volume()
 
      case 112:
         {
+         Point vec_10 = Edge::getVector(p[1], p[0]);
+         Point vec_12 = Edge::getVector(p[1], p[2]);
+         Point vec_13 = Edge::getVector(p[1], p[3]);
+
+         V += abs( vec_10.x*(vec_12.y*vec_13.z - vec_12.z*vec_13.y) - vec_10.y*(vec_12.x*vec_13.z - vec_12.z*vec_13.x) + vec_10.z*(vec_12.x*vec_13.y - vec_12.y*vec_13.x)) / 3;
+
+         Point vec_14 = Edge::getVector(p[1], p[4]);
+
+         V += abs( vec_12.x*(vec_13.y*vec_14.z - vec_13.z*vec_14.y) - vec_12.y*(vec_13.x*vec_14.z - vec_13.z*vec_14.x) + vec_12.z*(vec_13.x*vec_14.y - vec_13.y*vec_14.x)) / 3;
+
+         Point vec_23 = Edge::getVector(p[2], p[3]);
+         Point vec_25 = Edge::getVector(p[2], p[5]);
+         Point vec_24 = Edge::getVector(p[2], p[4]);
+
+         V += abs( vec_23.x*(vec_24.y*vec_25.z - vec_24.z*vec_25.y) - vec_23.y*(vec_24.x*vec_25.z - vec_24.z*vec_25.x) + vec_23.z*(vec_24.x*vec_25.y - vec_24.y*vec_25.x)) / 3;
 
          break;
         }
@@ -319,6 +423,54 @@ Mesh::~Mesh()
             delete (*it);
 }
 
+void Mesh::calc_heat_equation(double t_max)
+{
+        for(int i = 0; i < faces.size(); i++)
+        {
+            faces[i]->calc_h();
+            faces[i]->area();
+        }
+
+        for(int i = 0; i < cells.size(); i++)
+        {
+            cells[i]->volume();
+        }
+
+        double min_volume = cells[0]->V;
+        for(int i = 1; i < cells.size(); i++)
+        {
+            if(min_volume > cells[i]->V)
+                min_volume = cells[i]->V;
+        }
+
+        double tau = min_volume/2.5;
+
+        vector<Face*> vec_temp = bnd_faces["T393"];
+        double temp_value;
+        double t = 0;
+        double k = 1;
+
+        while(t < t_max)
+            {
+                t += tau;
+
+                for(int i = 0; i < vec_temp.size(); i++)
+                {
+                   vec_temp[i]->c[0]->T += (vec_temp[i]->S*(393 - vec_temp[i]->c[0]->T)/vec_temp[i]->h)*tau/vec_temp[i]->c[0]->V;
+                }
+
+                for(int i = 0; i < faces.size(); i++)
+                {
+                    if(faces[i]->c[1] != 0)
+                    {
+                        temp_value = faces[i]->S*(faces[i]->c[1]->T - faces[i]->c[0]->T)/faces[i]->h;
+                        faces[i]->c[0]->T += temp_value*tau/faces[i]->c[0]->V;
+                        faces[i]->c[1]->T -= temp_value*tau/faces[i]->c[1]->V;
+                    }
+                }
+            }
+}
+
 Mesh::CellIterator Mesh::beginCell() { return CellIterator(cells.begin()); }
 Mesh::CellIterator Mesh::endCell() { return CellIterator(cells.end()); }
 
@@ -351,7 +503,7 @@ void Mesh::iterateEdges(iterateEdgesFunc f)
 {
 	for (EdgeIterator it = this->beginEdge(); it != this->endEdge(); it++)
 	{
-		f(&(*it));
+            f(&(*it));
 	}
 }
 

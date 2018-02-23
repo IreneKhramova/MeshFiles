@@ -174,11 +174,9 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
 
 void MeshReaderUnv::parse_block_2477(Mesh* mesh, vector<string> &listOfstrings)
 {
-    bnd_cond.clear();
-
     vector<string>::iterator it = listOfstrings.begin();
     ++it;
-    vector<int> p;
+    vector<Face*> vec_faces;
     int tmp[8];
     char bnd_name[128];
     int n;
@@ -190,25 +188,30 @@ void MeshReaderUnv::parse_block_2477(Mesh* mesh, vector<string> &listOfstrings)
         ++it;
         sscanf(it->c_str(), "%s", bnd_name);
         ++it;
-        p.clear();
+        vec_faces.clear();
 
         for(int i = 0; i < n/2; i++) {
              sscanf(it->c_str(), "%d %d %d %d %d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3], &tmp[4], &tmp[5], &tmp[6], &tmp[7]);
              ++it;
-             p.push_back(tmp[0]);
+
+             vec_faces.push_back(bnd_cond[tmp[1]]);
+             vec_faces.push_back(bnd_cond[tmp[5]]);
+             /*p.push_back(tmp[0]);
              p.push_back(--tmp[1]);
              p.push_back(tmp[4]);
              p.push_back(--tmp[5]);
+             */
         }
 
         if(n % 2 == 1) {
              sscanf(it->c_str(), "%d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3]);
              ++it;
-             p.push_back(tmp[0]);
-             p.push_back(--tmp[1]);
+             vec_faces.push_back(bnd_cond[tmp[1]]);
+             //p.push_back(tmp[0]);
+             //p.push_back(--tmp[1]);
         }
 
-        bnd_cond[string(bnd_name)] = p;
+        mesh->bnd_faces[string(bnd_name)] = vec_faces;
     }
 }
 

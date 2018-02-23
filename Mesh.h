@@ -4,6 +4,8 @@
 #include <vector>
 #include <cmath>
 #include <cstdio>
+#include <string>
+#include <map>
 
 class PointIterator;
 
@@ -31,6 +33,11 @@ public:
 	double x;
 	double y;
 	double z;
+
+	Point operator+(Point) const;
+	Point operator/(double) const;
+	static double scalar_product(Point, Point);
+	static void normalize(Point*);
 };
 
 ///////////////////////
@@ -58,10 +65,12 @@ class Face
     Point** p;
 	Edge** e;
 	Cell* c[2]; // указатель на смежный Face
+	Point n; // единичный вектор нормали
 	int pCount;
 	int eCount;
 	int countOfUsing;
-	double S;
+    double S;
+	double h;
 
  public:
     Face(const int&, Point*, Point*, Point*);
@@ -73,8 +82,10 @@ class Face
     void initFace(Cell*, Edge*, Edge*, Edge*, Edge*);
 
     void area();
+    void calc_h();
 
  friend class Cell;
+ friend class Mesh;
 };
 
 ///////////////////
@@ -88,10 +99,12 @@ class Cell {
     Point** p;
     Edge** e;
     Face** f;
+    double T; // Температура в клетке
     int pCount;
     int eCount;
     int fCount;
     double V;
+    Point center;
 
  public:
     Cell(const int&, Point*, Point*, Point*, Point*);
@@ -103,6 +116,7 @@ class Cell {
     void volume();
 
     friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
+    friend class Face;
     friend class Mesh;
     friend class MeshReaderUnv;
 };
@@ -117,13 +131,16 @@ private:
     vector<Edge*> edges;
     vector<Face*> faces;
     vector<Cell*> cells;
+    map<string, vector<Face*> > bnd_faces;
 
 public:
+
 	Mesh() {}
     ~Mesh();
 
     void createPoints(Point*, unsigned int);
     void createPoints(const vector<Point>&);
+    void calc_heat_equation(double); // изменение температуры за время double t
 
     friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
 

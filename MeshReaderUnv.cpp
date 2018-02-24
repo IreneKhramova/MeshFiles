@@ -113,6 +113,8 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
                 face = new Face(94, &mesh->points[tmp[0] - 1], &mesh->points[tmp[1] - 1], &mesh->points[tmp[2] - 1], &mesh->points[tmp[3] - 1]);
                 mesh->faces.push_back(face);
 
+                bnd_cond[index] = face;
+
                 pFace[tmp[0] - 1][94].insert(face);
                 pFace[tmp[1] - 1][94].insert(face);
                 pFace[tmp[2] - 1][94].insert(face);

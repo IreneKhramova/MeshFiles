@@ -69,11 +69,13 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
     Face* face;
     Edge* edge;
     int tmp[8];
+    int index;
     vector<int> p;
     while(it != listOfstrings.end())
     {
         p.clear();
         sscanf(it->c_str(),"%d %d %d %d %d %d", &tmp[0], &tmp[1], &tmp[2], &tmp[3], &tmp[4], &tmp[5]);
+        index = tmp[0];
         ++it;
 
        switch(tmp[1])

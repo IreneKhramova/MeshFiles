@@ -7,6 +7,11 @@
 template <class T>
 class MeshIterator : public std::iterator<std::random_access_iterator_tag, T>
 {
+	using base = std::iterator<std::random_access_iterator_tag, T>;
+	using typename base::pointer;
+	using typename base::reference;
+	using typename base::difference_type;
+
 	friend class Mesh;
 private:
 	typename vector<T*>::iterator it;

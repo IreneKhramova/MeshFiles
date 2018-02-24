@@ -2,15 +2,14 @@
 #define FILTERITERATOR_H
 
 template <class Predicate, class Iterator>
-class FilterIterator
+class FilterIterator : public std::iterator<std::bidirectional_iterator_tag, Iterator>
 {
-public:
-	typedef typename iterator_traits<Iterator>::value_type value_type;
-	typedef typename iterator_traits<Iterator>::reference reference;
-	typedef typename iterator_traits<Iterator>::pointer pointer;
-	typedef typename iterator_traits<Iterator>::difference_type difference_type;
-	typedef std::bidirectional_iterator_tag iterator_category;
+	using base = std::iterator<std::bidirectional_iterator_tag, Iterator>;
+	using typename base::pointer;
+	using typename base::reference;
+	using typename base::difference_type;
 
+public:
 	FilterIterator() = default;
 	FilterIterator(const FilterIterator&) = default;
 	FilterIterator(Predicate f, Iterator begin, Iterator end, Iterator it) : m_pred(f), m_begin(begin), m_end(end), m_iter(it)

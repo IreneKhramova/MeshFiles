@@ -7,6 +7,11 @@
 template <class T>
 class MeshIterator : public std::iterator<std::random_access_iterator_tag, T>
 {
+	using base = std::iterator<std::random_access_iterator_tag, T>;
+	using typename base::pointer;
+	using typename base::reference;
+	using typename base::difference_type;
+
 	friend class Mesh;
 private:
 	typename vector<T*>::iterator it;
@@ -32,9 +37,6 @@ public:
 	MeshIterator& operator+=(difference_type n) { it += n; return *this; }
 	MeshIterator& operator-=(difference_type n) { return *this += -n; }
 	reference operator[](difference_type n) const { auto tmp = *this; tmp += n; return *tmp; }
-
-	// Операции, необходимые для всех категорий итераторов.
-	void swap(MeshIterator& a, MeshIterator& b) { std::swap(a.it, b.it); }
 
 	// Операции, необходимые для InputIterator.
 	bool operator==(const MeshIterator& other) { return it == other.it; }

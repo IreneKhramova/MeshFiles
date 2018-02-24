@@ -12,6 +12,9 @@ class PointIterator;
 template <class T>
 class MeshIterator;
 
+template <class Predicate, class Iterator>
+class FilterIterator;
+
 class Point;
 class Edge;
 class Face;
@@ -64,7 +67,7 @@ class Face
     int type;
     Point** p;
 	Edge** e;
-	Cell* c[2]; // указатель на смежный Face
+	Cell* c[2]; // указатель на смежный Cell
 	Point n; // единичный вектор нормали
 	int pCount;
 	int eCount;
@@ -83,6 +86,11 @@ class Face
 
     void area();
     void calc_h();
+
+	Cell** getCells()
+	{
+		return c;
+	}
 
  friend class Cell;
  friend class Mesh;
@@ -123,6 +131,18 @@ class Cell {
 
 //////////////
 
+class IsBoundaryFace {
+public:
+	bool operator()(Face* f);
+};
+
+class IsInnerFace {
+public:
+	bool operator()(Face* f);
+};
+
+//////////////
+
 class Mesh
 {
 private:
@@ -149,7 +169,8 @@ public:
 	typedef MeshIterator<Face> FaceIterator;
 	typedef MeshIterator<Edge> EdgeIterator;
 	typedef MeshIterator<Cell> CellIterator;
-	typedef PointIterator PointIterator;
+	typedef FilterIterator<IsBoundaryFace, FaceIterator> BoundaryFaceIterator;
+	typedef FilterIterator<IsInnerFace, FaceIterator> InnerFaceIterator;
 
 	CellIterator beginCell();
 	CellIterator endCell();
@@ -167,6 +188,12 @@ public:
 	void iterateFaces(iterateFacesFunc);
 	void iterateEdges(iterateEdgesFunc);
 	void iteratePoints(iteratePointsFunc);
+
+	BoundaryFaceIterator beginBoundaryFace();
+	BoundaryFaceIterator endBoundaryFace();
+
+	InnerFaceIterator beginInnerFace();
+	InnerFaceIterator endInnerFace();
 };
 
 #endif // MESH_H

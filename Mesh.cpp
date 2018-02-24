@@ -2,6 +2,7 @@
 #include "MeshReaderUnv.h"
 #include "MeshIterator.h"
 #include "PointIterator.h"
+#include "FilterIterator.h"
 
 ///////////////////////
 
@@ -389,6 +390,11 @@ void Cell::volume()
 
 ////////////////////
 
+bool IsBoundaryFace::operator()(Face* f) { Cell** c = f->getCells(); return (c[1] == NULL); }
+bool IsInnerFace::operator()(Face* f) { Cell** c = f->getCells(); return (c[1] != NULL); }
+
+////////////////////
+
 void Mesh::createPoints(Point* p, unsigned int pCount)
 {
         this->pCount = pCount;
@@ -482,6 +488,14 @@ Mesh::EdgeIterator Mesh::endEdge() { return EdgeIterator(edges.end()); }
 
 PointIterator Mesh::beginPoint() { return PointIterator(points); }
 PointIterator Mesh::endPoint() { return PointIterator(&points[pCount]); }
+
+IsBoundaryFace predicateBoundary;
+Mesh::BoundaryFaceIterator Mesh::beginBoundaryFace() { return BoundaryFaceIterator(predicateBoundary, this->beginFace(), this->endFace(), this->beginFace()); }
+Mesh::BoundaryFaceIterator Mesh::endBoundaryFace() { return BoundaryFaceIterator(predicateBoundary, this->beginFace(), this->endFace(), this->endFace()); }
+
+IsInnerFace predicateInner;
+Mesh::InnerFaceIterator Mesh::beginInnerFace() { return InnerFaceIterator(predicateInner, this->beginFace(), this->endFace(), this->beginFace()); }
+Mesh::InnerFaceIterator Mesh::endInnerFace() { return InnerFaceIterator(predicateInner, this->beginFace(), this->endFace(), this->endFace()); }
 
 void Mesh::iterateCells(iterateCellsFunc f)
 {
@@ -610,6 +624,20 @@ int main()
 	MeshReaderUnv mru("FItsad.unv");
 	mru.read(msh);
 
-	vtkWriteUnstructuredGrid("mesh.vtk", msh);
+	/*msh->iteratePoints(&funcPoints);
+	msh->iterateCells(&funcCells);
+	cout << pointC << endl;*/
+	int k = 0;
+	/*for (Mesh::BoundaryFaceIterator it = msh->beginBoundaryFace(); it != msh->endBoundaryFace(); it++) {
+		k++;
+	}*/
+	/*for (Mesh::FaceIterator it = msh->beginFace(); it != msh->endFace(); it++) {
+		k++;
+	}*/
+	for (Mesh::InnerFaceIterator it = msh->beginInnerFace(); it != msh->endInnerFace(); it++) {
+		k++;
+	}
+	cout << k << "\n";
+	//vtkWriteUnstructuredGrid("mesh.vtk", msh);
 	system("pause");
 }

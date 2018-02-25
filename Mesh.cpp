@@ -452,6 +452,7 @@ void Mesh::calc_heat_equation(double t_max)
         double tau = min_volume/2.5;
 
         vector<Face*> vec_temp = bnd_faces["T393"];
+
         double temp_value;
         double t = 0;
         double k = 1;
@@ -624,6 +625,9 @@ int main()
 	MeshReaderUnv mru("FItsad.unv");
 	mru.read(msh);
 
+    msh->calc_heat_equation(0.1);
+    vtkWriteUnstructuredGrid("example.vtk", msh);
+
 	/*msh->iteratePoints(&funcPoints);
 	msh->iterateCells(&funcCells);
 	cout << pointC << endl;*/
@@ -639,5 +643,5 @@ int main()
 	}
 	cout << k << "\n";
 	//vtkWriteUnstructuredGrid("mesh.vtk", msh);
-	system("pause");
+	//system("pause");
 }

@@ -54,7 +54,6 @@ void MeshReaderUnv::parse_block_2411(Mesh* mesh, vector<string> &listOfstrings)
          ++i;
          ++it;
     }
-
     mesh->createPoints(points);
     pEdge.resize(points.size());
     pFace.resize(points.size());
@@ -100,6 +99,8 @@ void MeshReaderUnv::parse_block_2412(Mesh* mesh, vector<string> &listOfstrings)
 
                 face = new Face(91, &mesh->points[tmp[0] - 1], &mesh->points[tmp[1] - 1], &mesh->points[tmp[2] - 1]);
                 mesh->faces.push_back(face);
+
+                bnd_cond[index] = face;
 
                 pFace[tmp[0] - 1][91].insert(face);
                 pFace[tmp[1] - 1][91].insert(face);

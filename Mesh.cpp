@@ -275,6 +275,8 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p
     p[5] = p6;
 
     center = (*p[0] + *p[1] + *p[2] + *p[3] + *p[4] + *p[5]) / 6;
+
+    T = 293;
 }
 
 Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6, Point* p7, Point* p8)
@@ -298,6 +300,8 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p
     p[7] = p8;
 
     center = (*p[0] + *p[1] + *p[2] + *p[3] + *p[4] + *p[5] + *p[6] + *p[7]) / 8;
+
+    T = 293;
 }
 
 // Вычисление объема клетки
@@ -342,46 +346,39 @@ void Cell::volume()
 
      case 115: // 115 - шестигранник
         {
-        Point vec_17 = Edge::getVector(p[1], p[7]);
-        Point vec_14 = Edge::getVector(p[1], p[4]);
-        Point vec_10 = Edge::getVector(p[1], p[0]);
+        Point vec_01 = Edge::getVector(p[0], p[1]);
+        Point vec_03 = Edge::getVector(p[0], p[3]);
+        Point vec_04 = Edge::getVector(p[0], p[4]);
 
-        V += abs( vec_17.x*(vec_14.y*vec_10.z - vec_14.z*vec_10.y) - vec_17.y*(vec_14.x*vec_10.z - vec_14.z*vec_10.x) + vec_17.z*(vec_14.x*vec_10.y - vec_14.y*vec_10.x) ) / 3;
+        V = abs( vec_01.x*(vec_04.y*vec_03.z - vec_04.z*vec_03.y) - vec_01.y*(vec_04.x*vec_03.z - vec_04.z*vec_03.x) + vec_01.z*(vec_04.x*vec_03.y - vec_04.y*vec_03.x) );
 
         Point vec_12 = Edge::getVector(p[1], p[2]);
-        Point vec_16 = Edge::getVector(p[1], p[6]);
+        Point vec_13 = Edge::getVector(p[1], p[3]);
+        Point vec_14 = Edge::getVector(p[1], p[4]);
 
-        V += abs( vec_17.x*(vec_12.y*vec_16.z - vec_12.z*vec_16.y) - vec_17.y*(vec_12.x*vec_16.z - vec_12.z*vec_16.x) + vec_17.z*(vec_12.x*vec_16.y - vec_12.y*vec_16.x) ) / 3;
+        V += abs( vec_12.x*(vec_13.y*vec_14.z - vec_13.z*vec_14.y) - vec_12.y*(vec_13.x*vec_14.z - vec_13.z*vec_14.x) + vec_12.z*(vec_13.x*vec_14.y - vec_13.y*vec_14.x) );
 
-        Point vec_56 = Edge::getVector(p[5], p[6]);
-        Point vec_54 = Edge::getVector(p[5], p[4]);
+        Point vec_15 = Edge::getVector(p[1], p[5]);
 
-        Point vec_norm;
+        V += abs( vec_12.x*(vec_14.y*vec_15.z - vec_14.z*vec_15.y) - vec_12.y*(vec_14.x*vec_15.z - vec_14.z*vec_15.x) + vec_12.z*(vec_14.x*vec_15.y - vec_14.y*vec_15.x) );
 
-        vec_norm.x = vec_56.y * vec_54.z - vec_56.z * vec_54.y;
-        vec_norm.y = - vec_56.x * vec_54.z + vec_56.z * vec_54.x;
-        vec_norm.z = vec_56.x * vec_54.y - vec_56.y * vec_54.x;
+        Point vec_76 = Edge::getVector(p[7], p[6]);
+        Point vec_73 = Edge::getVector(p[7], p[3]);
+        Point vec_74 = Edge::getVector(p[7], p[4]);
 
-        double norm = sqrt(vec_norm.x * vec_norm.x + vec_norm.y * vec_norm.y + vec_norm.z * vec_norm.z);
+        V += abs( vec_76.x*(vec_74.y*vec_73.z - vec_74.z*vec_73.y) - vec_76.y*(vec_74.x*vec_73.z - vec_74.z*vec_73.x) + vec_76.z*(vec_74.x*vec_73.y - vec_74.y*vec_73.x) );
 
-        Point vec_51 = Edge::getVector(p[5], p[1]);
-        double h = abs( vec_norm.x * vec_51.x + vec_norm.y * vec_51.y + vec_norm.z * vec_51.z ) / norm;
+        Point vec_62 = Edge::getVector(p[6], p[2]);
+        Point vec_63 = Edge::getVector(p[6], p[3]);
+        Point vec_64 = Edge::getVector(p[6], p[4]);
 
-        f[5]->area();
+        V += abs( vec_62.x*(vec_63.y*vec_64.z - vec_63.z*vec_64.y) - vec_62.y*(vec_63.x*vec_64.z - vec_63.z*vec_64.x) + vec_62.z*(vec_63.x*vec_64.y - vec_63.y*vec_64.x) );
 
-        V += f[5]->S * h / 3;
+        Point vec_65 = Edge::getVector(p[6], p[5]);
 
-        vec_norm.x = vec_10.y * vec_12.z - vec_10.z * vec_12.y;
-        vec_norm.y = - vec_10.x * vec_12.z + vec_10.z * vec_12.x;
-        vec_norm.z = vec_10.x * vec_12.y - vec_10.y * vec_12.x;
+        V += abs( vec_62.x*(vec_64.y*vec_65.z - vec_64.z*vec_65.y) - vec_62.y*(vec_64.x*vec_65.z - vec_64.z*vec_65.x) + vec_62.z*(vec_64.x*vec_65.y - vec_64.y*vec_65.x) );
 
-        norm = sqrt(vec_norm.x * vec_norm.x + vec_norm.y * vec_norm.y + vec_norm.z * vec_norm.z);
-
-        h = abs( vec_norm.x * vec_17.x + vec_norm.y * vec_17.y + vec_norm.z * vec_17.z ) / norm;
-
-        f[4]->area();
-
-        V += f[4]->S * h / 3;
+        V /= 6;
 
         break;
         }
@@ -437,21 +434,17 @@ void Mesh::calc_heat_equation(double t_max)
             faces[i]->area();
         }
 
-        for(int i = 0; i < cells.size(); i++)
-        {
-            cells[i]->volume();
-        }
-
+        cells[0]->volume();
         double min_volume = cells[0]->V;
         for(int i = 1; i < cells.size(); i++)
         {
+            cells[i]->volume();
             if(min_volume > cells[i]->V)
                 min_volume = cells[i]->V;
         }
 
-        double tau = min_volume/2.5;
-
-        vector<Face*> vec_temp = bnd_faces["T393"];
+        double tau = min_volume/2.1;
+        vector<Face*> vec_temp = bnd_faces["top"];
 
         double temp_value;
         double t = 0;
@@ -622,10 +615,10 @@ void funcPoints(Point *p)
 int main()
 {
 	Mesh* msh = new Mesh();
-	MeshReaderUnv mru("FItsad.unv");
+	MeshReaderUnv mru("cubeForEquation.unv");
 	mru.read(msh);
 
-    msh->calc_heat_equation(0.1);
+    msh->calc_heat_equation(0.2);
     vtkWriteUnstructuredGrid("example.vtk", msh);
 
 	/*msh->iteratePoints(&funcPoints);
@@ -638,9 +631,9 @@ int main()
 	/*for (Mesh::FaceIterator it = msh->beginFace(); it != msh->endFace(); it++) {
 		k++;
 	}*/
-	for (Mesh::InnerFaceIterator it = msh->beginInnerFace(); it != msh->endInnerFace(); it++) {
+	/*for (Mesh::InnerFaceIterator it = msh->beginInnerFace(); it != msh->endInnerFace(); it++) {
 		k++;
-	}
+	}*/
 	cout << k << "\n";
 	//vtkWriteUnstructuredGrid("mesh.vtk", msh);
 	//system("pause");

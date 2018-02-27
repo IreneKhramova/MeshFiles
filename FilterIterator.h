@@ -1,13 +1,12 @@
 #ifndef FILTERITERATOR_H
 #define FILTERITERATOR_H
 
-template <class Predicate, class Iterator>
-class FilterIterator : public std::iterator<std::bidirectional_iterator_tag, Iterator>
+template <class Predicate, class Iterator, class T>
+class FilterIterator : public std::iterator<std::bidirectional_iterator_tag, T>
 {
-	using base = std::iterator<std::bidirectional_iterator_tag, Iterator>;
+	using base = std::iterator<std::bidirectional_iterator_tag, T>;
 	using typename base::pointer;
 	using typename base::reference;
-	using typename base::difference_type;
 
 public:
 	FilterIterator() = default;
@@ -28,7 +27,7 @@ public:
 	FilterIterator operator++(int) { auto old = *this; ++(*this); return old; }
 	pointer operator->() const
 	{
-		return m_iter;
+		return &(*m_iter);
 	}
 
 	/* This is so slow */

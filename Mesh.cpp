@@ -50,12 +50,12 @@ Edge::Edge(Point* p1, Point* p2)
 
 double Edge::getlength()
 {
-	return sqrt(pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2));
+    return sqrt(pow(p[0]->x - p[1]->x, 2) + pow(p[0]->y - p[1]->y, 2) + pow(p[0]->z - p[1]->z, 2));
 }
 
 double Edge::getlength(Point* p1, Point* p2)
 {
-	return sqrt(pow(p1->x - p2->x, 2) + pow(p1->y - p2->y, 2) + pow(p1->z - p2->z, 2));
+    return sqrt(pow(p1->x - p2->x, 2) + pow(p1->y - p2->y, 2) + pow(p1->z - p2->z, 2));
 }
 
 Point Edge::getVector(Point* p1, Point* p2)
@@ -428,19 +428,20 @@ Mesh::~Mesh()
 
 void Mesh::calc_heat_equation(double t_max)
 {
-        for(int i = 0; i < faces.size(); i++)
+        for(FaceIterator it = beginFace(); it != endFace(); ++it)
         {
-            faces[i]->calc_h();
-            faces[i]->area();
+            it->calc_h();
+            it->area();
         }
 
         cells[0]->volume();
         double min_volume = cells[0]->V;
-        for(int i = 1; i < cells.size(); i++)
+        for(CellIterator it = beginCell(); it != endCell(); ++it)
         {
-            cells[i]->volume();
-            if(min_volume > cells[i]->V)
-                min_volume = cells[i]->V;
+            it->volume();
+            double vol = it->V;
+            if(min_volume > vol)
+                min_volume = vol;
         }
 
         double tau = min_volume/2.1;
@@ -448,7 +449,6 @@ void Mesh::calc_heat_equation(double t_max)
 
         double temp_value;
         double t = 0;
-        double k = 1;
 
         while(t < t_max)
             {
@@ -459,14 +459,11 @@ void Mesh::calc_heat_equation(double t_max)
                    vec_temp[i]->c[0]->T += (vec_temp[i]->S*(393 - vec_temp[i]->c[0]->T)/vec_temp[i]->h)*tau/vec_temp[i]->c[0]->V;
                 }
 
-                for(int i = 0; i < faces.size(); i++)
+                for(InnerFaceIterator it = beginInnerFace(), ite = endInnerFace(); it != ite; ++it)
                 {
-                    if(faces[i]->c[1] != 0)
-                    {
-                        temp_value = faces[i]->S*(faces[i]->c[1]->T - faces[i]->c[0]->T)/faces[i]->h;
-                        faces[i]->c[0]->T += temp_value*tau/faces[i]->c[0]->V;
-                        faces[i]->c[1]->T -= temp_value*tau/faces[i]->c[1]->V;
-                    }
+                    temp_value = it->S*(it->c[1]->T - it->c[0]->T)/it->h;
+                    it->c[0]->T += temp_value*tau/it->c[0]->V;
+                    it->c[1]->T -= temp_value*tau/it->c[1]->V;
                 }
             }
 }
@@ -484,119 +481,138 @@ PointIterator Mesh::beginPoint() { return PointIterator(points); }
 PointIterator Mesh::endPoint() { return PointIterator(&points[pCount]); }
 
 IsBoundaryFace predicateBoundary;
-Mesh::BoundaryFaceIterator Mesh::beginBoundaryFace() { return BoundaryFaceIterator(predicateBoundary, this->beginFace(), this->endFace(), this->beginFace()); }
-Mesh::BoundaryFaceIterator Mesh::endBoundaryFace() { return BoundaryFaceIterator(predicateBoundary, this->beginFace(), this->endFace(), this->endFace()); }
+Mesh::BoundaryFaceIterator Mesh::beginBoundaryFace()
+{
+    FaceIterator bf = beginFace();
+    return BoundaryFaceIterator(predicateBoundary, bf, endFace(), bf);
+}
+
+Mesh::BoundaryFaceIterator Mesh::endBoundaryFace()
+{
+    FaceIterator ef = endFace();
+    return BoundaryFaceIterator(predicateBoundary, beginFace(), ef, ef);
+}
+
 
 IsInnerFace predicateInner;
-Mesh::InnerFaceIterator Mesh::beginInnerFace() { return InnerFaceIterator(predicateInner, this->beginFace(), this->endFace(), this->beginFace()); }
-Mesh::InnerFaceIterator Mesh::endInnerFace() { return InnerFaceIterator(predicateInner, this->beginFace(), this->endFace(), this->endFace()); }
+Mesh::InnerFaceIterator Mesh::beginInnerFace()
+{
+    FaceIterator bf = beginFace();
+    return InnerFaceIterator(predicateInner, bf, endFace(), bf);
+}
+
+Mesh::InnerFaceIterator Mesh::endInnerFace()
+{
+    FaceIterator ef = endFace();
+    return InnerFaceIterator(predicateInner, beginFace(), ef, ef);
+}
 
 void Mesh::iterateCells(iterateCellsFunc f)
 {
-	for (CellIterator it = this->beginCell(); it != this->endCell(); it++)
-	{
-		f(&(*it));
-	}
+    for (CellIterator it = beginCell(), ite = endCell(); it != ite; ++it)
+    {
+        f(&(*it));
+    }
 }
 
 void Mesh::iterateFaces(iterateFacesFunc f)
 {
-	for (FaceIterator it = this->beginFace(); it != this->endFace(); it++)
-	{
-		f(&(*it));
-	}
+    for (FaceIterator it = beginFace(), ite = endFace(); it != ite; ++it)
+    {
+        f(&(*it));
+    }
 }
 
 void Mesh::iterateEdges(iterateEdgesFunc f)
 {
-	for (EdgeIterator it = this->beginEdge(); it != this->endEdge(); it++)
-	{
-            f(&(*it));
-	}
+    for (EdgeIterator it = beginEdge(), ite = endEdge(); it != ite; ++it)
+    {
+        f(&(*it));
+    }
 }
 
 void Mesh::iteratePoints(iteratePointsFunc f)
 {
-	for (PointIterator it = this->beginPoint(); it != this->endPoint(); it++)
-	{
-		f(&(*it));
-	}
+    for (PointIterator it = beginPoint(), ite = endPoint(); it != ite; ++it)
+    {
+        f(&(*it));
+    }
 }
 
 ////////////////////
 
 void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
 {
-	FILE *out;
-	out = fopen(filename, "w");
-	fprintf(out, "# vtk DataFile Version 3.0\n");
-	fprintf(out, "Mesh_test\n");
-	fprintf(out, "ASCII\n");
-	fprintf(out, "DATASET UNSTRUCTURED_GRID\n");
-	fprintf(out, "POINTS %d double\n", mesh->pCount);
-	for (int i = 0; i < mesh->pCount; i++)
-	{
-		fprintf(out, "%f %f %f\n", mesh->points[i].x, mesh->points[i].y, mesh->points[i].z);
-	}
+    FILE *out;
+    out = fopen(filename, "w");
+    fprintf(out, "# vtk DataFile Version 3.0\n");
+    fprintf(out, "Mesh_test\n");
+    fprintf(out, "ASCII\n");
+    fprintf(out, "DATASET UNSTRUCTURED_GRID\n");
+    fprintf(out, "POINTS %d double\n", mesh->pCount);
+    for (int i = 0; i < mesh->pCount; i++)
+    {
+        fprintf(out, "%f %f %f\n", mesh->points[i].x, mesh->points[i].y, mesh->points[i].z);
+    }
 
-	int cellCount = mesh->cells.size();
+    int cellCount = mesh->cells.size();
 
-	int cellSize = 0;//the size of the cell list (count of points in all cells)
-	for (int i = 0; i < cellCount; i++)
-	{
-		cellSize += mesh->cells[i]->pCount;
-	}
+    int cellSize = 0;//the size of the cell list (count of points in all cells)
+    for (int i = 0; i < cellCount; i++)
+    {
+        cellSize += mesh->cells[i]->pCount;
+    }
 
-	/*
-		cellSize + cellCount :
-		cellSize + one number for each cell - count of points in this cell
-	*/
-	fprintf(out, "CELLS %d %d\n", cellCount, cellSize + cellCount);
-	for (int i = 0; i < cellCount; i++)
-	{
-		fprintf(out, "%d", mesh->cells[i]->pCount);
-		for (int k = 0; k < mesh->cells[i]->pCount; k++)
-		{
-			int ind = -1;
-			Point* addr = mesh->cells[i]->p[k];
-			for (int j = 0; j < mesh->pCount; j++)
-			{
-				if (&(mesh->points[j]) == addr)
-					ind = j;
-			}
-			fprintf(out, " %d", ind);
-		}
-		fprintf(out, "\n");
-	}
-	fprintf(out, "CELL_TYPES %d\n", cellCount);
-	for (int i = 0; i < cellCount; i++)
-	{
-		switch (mesh->cells[i]->pCount)
-		{
-			case 4:
-			{
-				fprintf(out, "10\n"); //10 - VTK_TETRA
-				break;
-			}
-			case 6:
-			{
-				fprintf(out, "13\n"); //13 - VTK_WEDGE
-				break;
-			}
-			case 8:
-			{
-				fprintf(out, "12\n"); //12 - VTK_HEXAHEDRON
-				break;
-			}
-		}
+    /*
+        cellSize + cellCount :
+        cellSize + one number for each cell - count of points in this cell
+    */
+    fprintf(out, "CELLS %d %d\n", cellCount, cellSize + cellCount);
+    for (int i = 0; i < cellCount; i++)
+    {
+        fprintf(out, "%d", mesh->cells[i]->pCount);
+        for (int k = 0; k < mesh->cells[i]->pCount; k++)
+        {
+            int ind = -1;
+            Point* addr = mesh->cells[i]->p[k];
+            for (int j = 0; j < mesh->pCount; j++)
+            {
+                if (&(mesh->points[j]) == addr)
+                    ind = j;
+            }
+            fprintf(out, " %d", ind);
+        }
+        fprintf(out, "\n");
+    }
+    fprintf(out, "CELL_TYPES %d\n", cellCount);
+    for (int i = 0; i < cellCount; i++)
+    {
+        switch (mesh->cells[i]->pCount)
+        {
+            case 4:
+            {
+                fprintf(out, "10\n"); //10 - VTK_TETRA
+                break;
+            }
+            case 6:
+            {
+                fprintf(out, "13\n"); //13 - VTK_WEDGE
+                break;
+            }
+            case 8:
+            {
+                fprintf(out, "12\n"); //12 - VTK_HEXAHEDRON
+                break;
+            }
+        }
 
-	}
-	fprintf(out, "CELL_DATA %d\nSCALARS temperature float 1\nLOOKUP_TABLE default\n", cellCount);
-	for (int i = 0; i < cellCount; i++)
-	{
-		fprintf(out, "%f\n", mesh->cells[i]->T);
-	}
-	fclose(out);
+    }
+    fprintf(out, "CELL_DATA %d\nSCALARS temperature double 1\nLOOKUP_TABLE default\n", cellCount);
+    for (int i = 0; i < cellCount; i++)
+    {
+        fprintf(out, "%f\n", mesh->cells[i]->T);
+    }
+    fclose(out);
 }
 
 ///////////////////////////////
@@ -604,37 +620,27 @@ void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh)
 /*int pointC = 0;
 void funcCells(Cell *c)
 {
-	pointC++;
+    pointC++;
 }
 
 void funcPoints(Point *p)
 {
-	std::cout << p->x << std::endl;
+    std::cout << p->x << std::endl;
 }
 */
 int main()
 {
-	Mesh* msh = new Mesh();
-	MeshReaderUnv mru("cubeForEquation.unv");
-	mru.read(msh);
+    Mesh* msh = new Mesh();
+    MeshReaderUnv mru("cubeForEquation.unv");
+    mru.read(msh);
 
     msh->calc_heat_equation(0.2);
     vtkWriteUnstructuredGrid("example.vtk", msh);
 
-	/*msh->iteratePoints(&funcPoints);
-	msh->iterateCells(&funcCells);
-	cout << pointC << endl;*/
-	int k = 0;
-	/*for (Mesh::BoundaryFaceIterator it = msh->beginBoundaryFace(); it != msh->endBoundaryFace(); it++) {
-		k++;
-	}*/
-	/*for (Mesh::FaceIterator it = msh->beginFace(); it != msh->endFace(); it++) {
-		k++;
-	}*/
-	/*for (Mesh::InnerFaceIterator it = msh->beginInnerFace(); it != msh->endInnerFace(); it++) {
-		k++;
-	}*/
-	cout << k << "\n";
-	//vtkWriteUnstructuredGrid("mesh.vtk", msh);
-	//system("pause");
+    /*msh->iteratePoints(&funcPoints);
+    msh->iterateCells(&funcCells);
+    cout << pointC << endl;*/
+
+    //vtkWriteUnstructuredGrid("mesh.vtk", msh);
+    //system("pause");
 }

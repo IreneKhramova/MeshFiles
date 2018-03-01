@@ -428,17 +428,9 @@ Mesh::~Mesh()
 
 void Mesh::calc_heat_equation(double t_max)
 {
-        for(FaceIterator it = beginFace(); it != endFace(); ++it)
-        {
-            it->calc_h();
-            it->area();
-        }
-
-        cells[0]->volume();
         double min_volume = cells[0]->V;
         for(CellIterator it = beginCell(); it != endCell(); ++it)
         {
-            it->volume();
             double vol = it->V;
             if(min_volume > vol)
                 min_volume = vol;

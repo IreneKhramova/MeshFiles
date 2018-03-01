@@ -618,4 +618,14 @@ void MeshReaderUnv::read(Mesh* mesh)
             }
         }
     }
+        for(vector<Face*>::iterator it = mesh->faces.begin(); it != mesh->faces.end(); ++it)
+        {
+                (*it)->area();
+                (*it)->calc_h();
+        }
+
+        for(vector<Cell*>::iterator it = mesh->cells.begin(); it != mesh->cells.end(); ++it)
+        {
+                (*it)->volume();
+        }
  }

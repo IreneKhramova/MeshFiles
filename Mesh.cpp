@@ -198,7 +198,7 @@ void Face::area()
     }
 }
 
-// Вычисление расстояние между центрами
+// Вычисление расстояния между центрами
 void Face::calc_h() {
 
     Point center1 = c[0]->center;
@@ -429,7 +429,7 @@ Mesh::~Mesh()
 void Mesh::calc_heat_equation(double t_max)
 {
         double min_volume = cells[0]->V;
-        for(CellIterator it = beginCell(); it != endCell(); ++it)
+        for(CellIterator it = beginCell(), ite = endCell(); it != ite; ++it)
         {
             double vol = it->V;
             if(min_volume > vol)
@@ -437,7 +437,6 @@ void Mesh::calc_heat_equation(double t_max)
         }
 
         double tau = min_volume/2.1;
-        vector<Face*> vec_temp = bnd_faces["top"];
 
         double temp_value;
         double t = 0;
@@ -446,9 +445,9 @@ void Mesh::calc_heat_equation(double t_max)
             {
                 t += tau;
 
-                for(int i = 0; i < vec_temp.size(); i++)
+                for(FaceIterator it = beginBndFace("top"), ite = endBndFace("top"); it != ite; ++it)
                 {
-                   vec_temp[i]->c[0]->T += (vec_temp[i]->S*(393 - vec_temp[i]->c[0]->T)/vec_temp[i]->h)*tau/vec_temp[i]->c[0]->V;
+                    it->c[0]->T += (it->S*(393 - it->c[0]->T) / it->h)*tau / it->c[0]->V;
                 }
 
                 for(InnerFaceIterator it = beginInnerFace(), ite = endInnerFace(); it != ite; ++it)
@@ -498,6 +497,9 @@ Mesh::InnerFaceIterator Mesh::endInnerFace()
     FaceIterator ef = endFace();
     return InnerFaceIterator(predicateInner, beginFace(), ef, ef);
 }
+
+Mesh::FaceIterator Mesh::beginBndFace(string str) { return FaceIterator(bnd_faces[str].begin()); }
+Mesh::FaceIterator Mesh::endBndFace(string str) { return FaceIterator(bnd_faces[str].end()); }
 
 void Mesh::iterateCells(iterateCellsFunc f)
 {

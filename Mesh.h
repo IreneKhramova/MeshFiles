@@ -184,16 +184,19 @@ public:
     PointIterator beginPoint();
     PointIterator endPoint();
 
-    void iterateCells(iterateCellsFunc);
-    void iterateFaces(iterateFacesFunc);
-    void iterateEdges(iterateEdgesFunc);
-    void iteratePoints(iteratePointsFunc);
-
     BoundaryFaceIterator beginBoundaryFace();
     BoundaryFaceIterator endBoundaryFace();
 
     InnerFaceIterator beginInnerFace();
     InnerFaceIterator endInnerFace();
+
+    FaceIterator beginBndFace(string);
+    FaceIterator endBndFace(string);
+
+    void iterateCells(iterateCellsFunc);
+    void iterateFaces(iterateFacesFunc);
+    void iterateEdges(iterateEdgesFunc);
+    void iteratePoints(iteratePointsFunc);
 };
 
 #endif // MESH_H

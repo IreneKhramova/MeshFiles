@@ -92,8 +92,9 @@ class Face
         return c;
     }
 
- friend class Cell;
- friend class Mesh;
+    friend class Cell;
+    friend class Mesh;
+    friend class Calculation;
 };
 
 ///////////////////
@@ -123,10 +124,10 @@ class Cell {
 
     void volume();
 
-    friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
     friend class Face;
     friend class Mesh;
     friend class MeshReaderUnv;
+    friend class Calculation;
 };
 
 //////////////
@@ -160,11 +161,9 @@ public:
 
     void createPoints(Point*, unsigned int);
     void createPoints(const vector<Point>&);
-    void calc_heat_equation(double); // изменение температуры за время double t
-
-    friend void vtkWriteUnstructuredGrid(const char *filename, Mesh* mesh);
 
     friend class MeshReaderUnv;
+    friend class Calculation;
 
     typedef MeshIterator<Face> FaceIterator;
     typedef MeshIterator<Edge> EdgeIterator;

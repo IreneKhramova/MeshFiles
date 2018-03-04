@@ -237,6 +237,9 @@ void MeshReaderUnv::parse_block(Mesh* mesh, vector<string> &listOfstrings)
         case 2412:
             parse_block_2412(mesh, listOfstrings);
             break;
+        case 2467:
+            parse_block_2477(mesh, listOfstrings);
+            break;
         case 2477:
             parse_block_2477(mesh, listOfstrings);
             break;

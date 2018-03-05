@@ -1,6 +1,112 @@
 #include "Calculation.h"
 #include "MeshIterator.h"
 #include "FilterIterator.h"
+#include "tinyxml2.h"
+
+void Calculation::init(const char *filename)
+{
+    tinyxml2::XMLDocument xmlDoc;
+    tinyxml2::XMLError eResult = xmlDoc.LoadFile(filename);
+    if (eResult != tinyxml2::XML_SUCCESS)
+    {
+        printf("XMLERROR is %d\nXML loading unsuccessfull.\n", eResult);
+        exit(eResult);
+    }
+
+    /* Температура для всех cell */
+    tinyxml2::XMLElement* pNode1 = xmlDoc.FirstChildElement("regions");
+    if (pNode1 == nullptr)
+    {
+        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        exit(1);
+    }
+    tinyxml2::XMLElement* pNode2 = pNode1->FirstChildElement("region");
+    if (pNode2 == nullptr)
+    {
+        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        exit(1);
+    }
+    tinyxml2::XMLElement* pNode3 = pNode2->FirstChildElement("parameters");
+    if (pNode3 == nullptr)
+    {
+        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        exit(1);
+    }
+    tinyxml2::XMLElement* pNode4 = pNode3->FirstChildElement("T");
+    if (pNode4 == nullptr)
+    {
+        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        exit(1);
+    }
+    double t;
+    eResult = pNode4->QueryDoubleAttribute("value", &t);
+    if (eResult != tinyxml2::XML_SUCCESS)
+    {
+        printf("XMLERROR is %d\nXML loading unsuccessfull.\n", eResult);
+        exit(eResult);
+    }
+
+    for (Mesh::FaceIterator it = msh->beginFace(), ite = msh->endFace(); it != ite; ++it)
+    {
+        it->c[0]->T = t;
+    }
+    for (Mesh::InnerFaceIterator it = msh->beginInnerFace(), ite = msh->endInnerFace(); it != ite; ++it)
+    {
+        it->c[1]->T = t;
+    }
+
+    /* Температура для заданных face */
+    tinyxml2::XMLElement* pBnd = xmlDoc.FirstChildElement("boundaries");
+    if (pBnd == nullptr)
+    {
+        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        exit(1);
+    }
+    tinyxml2::XMLElement* pBndElement = pBnd->FirstChildElement("boundCond");
+    if (pBndElement == nullptr)
+    {
+        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        exit(1);
+    }
+    while (pBndElement != nullptr)
+    {
+        string str;
+        tinyxml2::XMLElement* pName = pBndElement->FirstChildElement("name");
+        if (pName == nullptr)
+        {
+            printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+            exit(1);
+        }
+        str = pName->GetText();
+
+        tinyxml2::XMLElement* pPar = pBndElement->FirstChildElement("parameters");
+        if (pPar == nullptr)
+        {
+            printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+            exit(1);
+        }
+        tinyxml2::XMLElement* pT = pPar->FirstChildElement("T");
+        if (pT == nullptr)
+        {
+            printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+            exit(1);
+        }
+        double temp;
+        eResult = pT->QueryDoubleAttribute("value", &temp);
+        if (eResult != tinyxml2::XML_SUCCESS)
+        {
+            printf("XMLERROR is %d\nXML loading unsuccessfull.\n", eResult);
+            exit(eResult);
+        }
+        for (Mesh::FaceIterator it = msh->beginBndFace(str), ite = msh->endBndFace(str); it != ite; ++it)
+        {
+            it->fixedT = temp;
+        }
+
+        pBndElement = pBndElement->NextSiblingElement("boundCond");
+    }
+}
+
 
 void Calculation::calc_heat_equation(double t_max)
 {
@@ -23,7 +129,7 @@ void Calculation::calc_heat_equation(double t_max)
 
         for (Mesh::FaceIterator it = msh->beginBndFace("top"), ite = msh->endBndFace("top"); it != ite; ++it)
         {
-            it->c[0]->T += (it->S*(393 - it->c[0]->T) / it->h)*tau / it->c[0]->V;
+            it->c[0]->T += (it->S*(it->fixedT - it->c[0]->T) / it->h)*tau / it->c[0]->V;
         }
 
         for (Mesh::InnerFaceIterator it = msh->beginInnerFace(), ite = msh->endInnerFace(); it != ite; ++it)

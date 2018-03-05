@@ -74,6 +74,7 @@ class Face
     int countOfUsing;
     double S;
     double h;
+    double fixedT;
 
  public:
     Face(const int&, Point*, Point*, Point*);

@@ -11,8 +11,9 @@ public:
     Calculation(Mesh* m) : msh(m) {}
     ~Calculation() {}
 
-    void calc_heat_equation(double t_max); // изменение температуры за время double t
-    void save(const char *filename); // запись в vtk
+    void init(const char *filename);
+    void calc_heat_equation(double t_max); // РёР·РјРµРЅРµРЅРёРµ С‚РµРјРїРµСЂР°С‚СѓСЂС‹ Р·Р° РІСЂРµРјСЏ t_max
+    void save(const char *filename); // Р·Р°РїРёСЃСЊ РІ vtk
 };
 
 #endif // CALCULATION_H

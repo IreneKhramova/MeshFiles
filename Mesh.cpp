@@ -254,7 +254,6 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4)
     p[3] = p4;
 
     center = (*p[0] + *p[1] + *p[2] + *p[3]) / 4;
-    T = 293;
 }
 
 Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6)
@@ -276,8 +275,6 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p
     p[5] = p6;
 
     center = (*p[0] + *p[1] + *p[2] + *p[3] + *p[4] + *p[5]) / 6;
-
-    T = 293;
 }
 
 Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p5, Point* p6, Point* p7, Point* p8)
@@ -301,8 +298,6 @@ Cell::Cell(const int& type, Point* p1, Point* p2, Point* p3, Point* p4, Point* p
     p[7] = p8;
 
     center = (*p[0] + *p[1] + *p[2] + *p[3] + *p[4] + *p[5] + *p[6] + *p[7]) / 8;
-
-    T = 293;
 }
 
 // Вычисление объема клетки
@@ -521,8 +516,9 @@ int main()
     mru.read(msh);
 
     Calculation* calc = new Calculation(msh);
+    calc->init("bnd.xml");
     calc->calc_heat_equation(0.2);
-    calc->save("example.vtk");
+    calc->save("exampleXML.vtk");
 
     /*msh->iteratePoints(&funcPoints);
     msh->iterateCells(&funcCells);

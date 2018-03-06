@@ -46,13 +46,9 @@ void Calculation::init(const char *filename)
         exit(eResult);
     }
 
-    for (Mesh::FaceIterator it = msh->beginFace(), ite = msh->endFace(); it != ite; ++it)
+    for (Mesh::CellIterator it = msh->beginCell(), ite = msh->endCell(); it != ite; ++it)
     {
-        it->c[0]->T = t;
-    }
-    for (Mesh::InnerFaceIterator it = msh->beginInnerFace(), ite = msh->endInnerFace(); it != ite; ++it)
-    {
-        it->c[1]->T = t;
+        it->T = t;
     }
 
     /* Температура для заданных face */

@@ -1,6 +1,7 @@
 #include "Calculation.h"
 #include "MeshIterator.h"
 #include "FilterIterator.h"
+#include "BndIterator.h"
 #include "tinyxml2.h"
 
 void Calculation::init(const char *filename)
@@ -17,25 +18,25 @@ void Calculation::init(const char *filename)
     tinyxml2::XMLElement* pNode1 = xmlDoc.FirstChildElement("regions");
     if (pNode1 == nullptr)
     {
-        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        printf("XMLERROR: No such FirstChildElement.\n");
         exit(1);
     }
     tinyxml2::XMLElement* pNode2 = pNode1->FirstChildElement("region");
     if (pNode2 == nullptr)
     {
-        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        printf("XMLERROR: No such FirstChildElement.\n");
         exit(1);
     }
     tinyxml2::XMLElement* pNode3 = pNode2->FirstChildElement("parameters");
     if (pNode3 == nullptr)
     {
-        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        printf("XMLERROR: No such FirstChildElement.\n");
         exit(1);
     }
     tinyxml2::XMLElement* pNode4 = pNode3->FirstChildElement("T");
     if (pNode4 == nullptr)
     {
-        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        printf("XMLERROR: No such FirstChildElement.\n");
         exit(1);
     }
     double t;
@@ -55,13 +56,13 @@ void Calculation::init(const char *filename)
     tinyxml2::XMLElement* pBnd = xmlDoc.FirstChildElement("boundaries");
     if (pBnd == nullptr)
     {
-        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        printf("XMLERROR: No such FirstChildElement.\n");
         exit(1);
     }
     tinyxml2::XMLElement* pBndElement = pBnd->FirstChildElement("boundCond");
     if (pBndElement == nullptr)
     {
-        printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+        printf("XMLERROR: No such FirstChildElement.\n");
         exit(1);
     }
     while (pBndElement != nullptr)
@@ -70,7 +71,7 @@ void Calculation::init(const char *filename)
         tinyxml2::XMLElement* pName = pBndElement->FirstChildElement("name");
         if (pName == nullptr)
         {
-            printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+            printf("XMLERROR: No such FirstChildElement.\n");
             exit(1);
         }
         str = pName->GetText();
@@ -78,13 +79,13 @@ void Calculation::init(const char *filename)
         tinyxml2::XMLElement* pPar = pBndElement->FirstChildElement("parameters");
         if (pPar == nullptr)
         {
-            printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+            printf("XMLERROR: No such FirstChildElement.\n");
             exit(1);
         }
         tinyxml2::XMLElement* pT = pPar->FirstChildElement("T");
         if (pT == nullptr)
         {
-            printf("XMLERROR is %d\nNo such FirstChildElement.\n");
+            printf("XMLERROR: No such FirstChildElement.\n");
             exit(1);
         }
         double temp;
@@ -124,12 +125,9 @@ void Calculation::calc_heat_equation(double t_max)
     while (t < t_max)
     {
         t += tau;
-        for (auto iter = bndNames.begin(); iter != bndNames.end(); iter++)
+        for (Mesh::BndFaceIterator it = msh->beginBndFace(&(msh->bnd_faces), &bndNames), ite = msh->endBndFace(&(msh->bnd_faces), &bndNames); it != ite; ++it)
         {
-            for (Mesh::FaceIterator it = msh->beginBndFace(*iter), ite = msh->endBndFace(*iter); it != ite; ++it)
-            {
-                it->c[0]->T += (it->S*(it->fixedT - it->c[0]->T) / it->h)*tau / it->c[0]->V;
-            }
+            it->c[0]->T += (it->S*(it->fixedT - it->c[0]->T) / it->h)*tau / it->c[0]->V;
         }
         for (Mesh::InnerFaceIterator it = msh->beginInnerFace(), ite = msh->endInnerFace(); it != ite; ++it)
         {

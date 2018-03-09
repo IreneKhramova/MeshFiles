@@ -15,6 +15,9 @@ class MeshIterator;
 template <class Predicate, class Iterator, class T>
 class FilterIterator;
 
+template <class T>
+class BndIterator;
+
 class Point;
 class Edge;
 class Face;
@@ -171,6 +174,7 @@ public:
     typedef MeshIterator<Cell> CellIterator;
     typedef FilterIterator<IsBoundaryFace, FaceIterator, Face> BoundaryFaceIterator;
     typedef FilterIterator<IsInnerFace, FaceIterator, Face> InnerFaceIterator;
+    typedef BndIterator<Face> BndFaceIterator;
 
     CellIterator beginCell();
     CellIterator endCell();
@@ -192,6 +196,8 @@ public:
 
     FaceIterator beginBndFace(string);
     FaceIterator endBndFace(string);
+    BndFaceIterator beginBndFace(map<std::string, vector<Face*>> *m, vector<string> *str);
+    BndFaceIterator endBndFace(map<std::string, vector<Face*>> *m, vector<string> *str);
 
     void iterateCells(iterateCellsFunc);
     void iterateFaces(iterateFacesFunc);

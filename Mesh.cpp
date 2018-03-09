@@ -4,6 +4,7 @@
 #include "PointIterator.h"
 #include "FilterIterator.h"
 #include "Calculation.h"
+#include "BndIterator.h"
 
 ///////////////////////
 
@@ -463,6 +464,17 @@ Mesh::InnerFaceIterator Mesh::endInnerFace()
 
 Mesh::FaceIterator Mesh::beginBndFace(string str) { return FaceIterator(bnd_faces[str].begin()); }
 Mesh::FaceIterator Mesh::endBndFace(string str) { return FaceIterator(bnd_faces[str].end()); }
+
+Mesh::BndFaceIterator Mesh::beginBndFace(map<std::string, vector<Face*>> *m, vector<string> *str)
+{
+    auto it = str->begin();
+    return BndFaceIterator(m, it, str->end(), bnd_faces[*it].begin());
+}
+Mesh::BndFaceIterator Mesh::endBndFace(map<std::string, vector<Face*>> *m, vector<string> *str)
+{
+    auto it = str->end();
+    return BndFaceIterator(m, it, it, bnd_faces[*(it-1)].end());
+}
 
 void Mesh::iterateCells(iterateCellsFunc f)
 {

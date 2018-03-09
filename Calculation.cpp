@@ -99,6 +99,8 @@ void Calculation::init(const char *filename)
             it->fixedT = temp;
         }
 
+        bndNames.push_back(str);
+
         pBndElement = pBndElement->NextSiblingElement("boundCond");
     }
 }
@@ -122,12 +124,13 @@ void Calculation::calc_heat_equation(double t_max)
     while (t < t_max)
     {
         t += tau;
-
-        for (Mesh::FaceIterator it = msh->beginBndFace("top"), ite = msh->endBndFace("top"); it != ite; ++it)
+        for (auto iter = bndNames.begin(); iter != bndNames.end(); iter++)
         {
-            it->c[0]->T += (it->S*(it->fixedT - it->c[0]->T) / it->h)*tau / it->c[0]->V;
+            for (Mesh::FaceIterator it = msh->beginBndFace(*iter), ite = msh->endBndFace(*iter); it != ite; ++it)
+            {
+                it->c[0]->T += (it->S*(it->fixedT - it->c[0]->T) / it->h)*tau / it->c[0]->V;
+            }
         }
-
         for (Mesh::InnerFaceIterator it = msh->beginInnerFace(), ite = msh->endInnerFace(); it != ite; ++it)
         {
             temp_value = it->S*(it->c[1]->T - it->c[0]->T) / it->h;

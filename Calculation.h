@@ -7,6 +7,7 @@ class Calculation
 {
 private:
     Mesh* msh;
+    vector<string> bndNames;
 public:
     Calculation(Mesh* m) : msh(m) {}
     ~Calculation() {}

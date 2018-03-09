@@ -25,9 +25,9 @@ distribution.
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
-#	if defined(__PS3__)
-#		include <stddef.h>
-#	endif
+#   if defined(__PS3__)
+#       include <stddef.h>
+#   endif
 #else
 #   include <cctype>
 #   include <climits>
@@ -176,8 +176,8 @@ namespace tinyxml2
         char*   _start;
         char*   _end;
 
-        StrPair(const StrPair& other);	// not supported
-        void operator=(StrPair& other);	// not supported, use TransferTo()
+        StrPair(const StrPair& other);  // not supported
+        void operator=(StrPair& other); // not supported, use TransferTo()
     };
 
 
@@ -291,7 +291,7 @@ namespace tinyxml2
                 int newAllocated = cap * 2;
                 T* newMem = new T[newAllocated];
                 TIXMLASSERT(newAllocated >= _size);
-                memcpy(newMem, _mem, sizeof(T)*_size);	// warning: not using constructors, only works for PODs
+                memcpy(newMem, _mem, sizeof(T)*_size);  // warning: not using constructors, only works for PODs
                 if (_mem != _pool) {
                     delete[] _mem;
                 }
@@ -302,8 +302,8 @@ namespace tinyxml2
 
         T*  _mem;
         T   _pool[INITIAL_SIZE];
-        int _allocated;		// objects allocated
-        int _size;			// number objects in use
+        int _allocated;     // objects allocated
+        int _size;          // number objects in use
     };
 
 
@@ -411,13 +411,13 @@ namespace tinyxml2
 
         // This number is perf sensitive. 4k seems like a good tradeoff on my machine.
         // The test file is large, 170k.
-        // Release:		VS2010 gcc(no opt)
-        //		1k:		4000
-        //		2k:		4000
-        //		4k:		3900	21000
-        //		16k:	5200
-        //		32k:	4300
-        //		64k:	4000	21000
+        // Release:     VS2010 gcc(no opt)
+        //      1k:     4000
+        //      2k:     4000
+        //      4k:     3900    21000
+        //      16k:    5200
+        //      32k:    4300
+        //      64k:    4000    21000
         // Declared public because some compilers do not accept to use ITEMS_PER_BLOCK
         // in private part if ITEMS_PER_BLOCK is private
         enum { ITEMS_PER_BLOCK = (4 * 1024) / ITEM_SIZE };
@@ -507,10 +507,10 @@ namespace tinyxml2
         XML_ERROR_FILE_NOT_FOUND,
         XML_ERROR_FILE_COULD_NOT_BE_OPENED,
         XML_ERROR_FILE_READ_ERROR,
-        UNUSED_XML_ERROR_ELEMENT_MISMATCH,	// remove at next major version
+        UNUSED_XML_ERROR_ELEMENT_MISMATCH,  // remove at next major version
         XML_ERROR_PARSING_ELEMENT,
         XML_ERROR_PARSING_ATTRIBUTE,
-        UNUSED_XML_ERROR_IDENTIFYING_TAG,	// remove at next major version
+        UNUSED_XML_ERROR_IDENTIFYING_TAG,   // remove at next major version
         XML_ERROR_PARSING_TEXT,
         XML_ERROR_PARSING_CDATA,
         XML_ERROR_PARSING_COMMENT,
@@ -601,10 +601,10 @@ namespace tinyxml2
         static void ToStr(int64_t v, char* buffer, int bufferSize);
 
         // converts strings to primitive types
-        static bool	ToInt(const char* str, int* value);
+        static bool ToInt(const char* str, int* value);
         static bool ToUnsigned(const char* str, unsigned* value);
-        static bool	ToBool(const char* str, bool* value);
-        static bool	ToFloat(const char* str, float* value);
+        static bool ToBool(const char* str, bool* value);
+        static bool ToFloat(const char* str, float* value);
         static bool ToDouble(const char* str, double* value);
         static bool ToInt64(const char* str, int64_t* value);
 
@@ -631,12 +631,12 @@ namespace tinyxml2
     When the XMLDocument gets deleted, all its Nodes
     will also be deleted.
     @verbatim
-    A Document can contain:	Element	(container or leaf)
+    A Document can contain: Element (container or leaf)
     Comment (leaf)
     Unknown (leaf)
     Declaration( leaf )
-    An Element can contain:	Element (container or leaf)
-    Text	(leaf)
+    An Element can contain: Element (container or leaf)
+    Text    (leaf)
     Attributes (not on tree)
     Comment (leaf)
     Unknown (leaf)
@@ -660,56 +660,56 @@ namespace tinyxml2
         }
 
         /// Safely cast to an Element, or null.
-        virtual XMLElement*		ToElement() {
+        virtual XMLElement*     ToElement() {
             return 0;
         }
         /// Safely cast to Text, or null.
-        virtual XMLText*		ToText() {
+        virtual XMLText*        ToText() {
             return 0;
         }
         /// Safely cast to a Comment, or null.
-        virtual XMLComment*		ToComment() {
+        virtual XMLComment*     ToComment() {
             return 0;
         }
         /// Safely cast to a Document, or null.
-        virtual XMLDocument*	ToDocument() {
+        virtual XMLDocument*    ToDocument() {
             return 0;
         }
         /// Safely cast to a Declaration, or null.
-        virtual XMLDeclaration*	ToDeclaration() {
+        virtual XMLDeclaration* ToDeclaration() {
             return 0;
         }
         /// Safely cast to an Unknown, or null.
-        virtual XMLUnknown*		ToUnknown() {
+        virtual XMLUnknown*     ToUnknown() {
             return 0;
         }
 
-        virtual const XMLElement*		ToElement() const {
+        virtual const XMLElement*       ToElement() const {
             return 0;
         }
-        virtual const XMLText*			ToText() const {
+        virtual const XMLText*          ToText() const {
             return 0;
         }
-        virtual const XMLComment*		ToComment() const {
+        virtual const XMLComment*       ToComment() const {
             return 0;
         }
-        virtual const XMLDocument*		ToDocument() const {
+        virtual const XMLDocument*      ToDocument() const {
             return 0;
         }
-        virtual const XMLDeclaration*	ToDeclaration() const {
+        virtual const XMLDeclaration*   ToDeclaration() const {
             return 0;
         }
-        virtual const XMLUnknown*		ToUnknown() const {
+        virtual const XMLUnknown*       ToUnknown() const {
             return 0;
         }
 
         /** The meaning of 'value' changes for the specific type.
         @verbatim
-        Document:	empty (NULL is returned, not an empty string)
-        Element:	name of the element
-        Comment:	the comment text
-        Unknown:	the tag contents
-        Text:		the text string
+        Document:   empty (NULL is returned, not an empty string)
+        Element:    name of the element
+        Comment:    the comment text
+        Unknown:    the tag contents
+        Text:       the text string
         @endverbatim
         */
         const char* Value() const;
@@ -723,7 +723,7 @@ namespace tinyxml2
         int GetLineNum() const { return _parseLineNum; }
 
         /// Get the parent of this node on the DOM.
-        const XMLNode*	Parent() const {
+        const XMLNode*  Parent() const {
             return _parent;
         }
 
@@ -741,7 +741,7 @@ namespace tinyxml2
             return _firstChild;
         }
 
-        XMLNode*		FirstChild() {
+        XMLNode*        FirstChild() {
             return _firstChild;
         }
 
@@ -755,11 +755,11 @@ namespace tinyxml2
         }
 
         /// Get the last child node, or null if none exists.
-        const XMLNode*	LastChild() const {
+        const XMLNode*  LastChild() const {
             return _lastChild;
         }
 
-        XMLNode*		LastChild() {
+        XMLNode*        LastChild() {
             return _lastChild;
         }
 
@@ -773,34 +773,34 @@ namespace tinyxml2
         }
 
         /// Get the previous (left) sibling node of this node.
-        const XMLNode*	PreviousSibling() const {
+        const XMLNode*  PreviousSibling() const {
             return _prev;
         }
 
-        XMLNode*	PreviousSibling() {
+        XMLNode*    PreviousSibling() {
             return _prev;
         }
 
         /// Get the previous (left) sibling element of this node, with an optionally supplied name.
-        const XMLElement*	PreviousSiblingElement(const char* name = 0) const;
+        const XMLElement*   PreviousSiblingElement(const char* name = 0) const;
 
-        XMLElement*	PreviousSiblingElement(const char* name = 0) {
+        XMLElement* PreviousSiblingElement(const char* name = 0) {
             return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->PreviousSiblingElement(name));
         }
 
         /// Get the next (right) sibling node of this node.
-        const XMLNode*	NextSibling() const {
+        const XMLNode*  NextSibling() const {
             return _next;
         }
 
-        XMLNode*	NextSibling() {
+        XMLNode*    NextSibling() {
             return _next;
         }
 
         /// Get the next (right) sibling element of this node, with an optionally supplied name.
-        const XMLElement*	NextSiblingElement(const char* name = 0) const;
+        const XMLElement*   NextSiblingElement(const char* name = 0) const;
 
-        XMLElement*	NextSiblingElement(const char* name = 0) {
+        XMLElement* NextSiblingElement(const char* name = 0) {
             return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->NextSiblingElement(name));
         }
 
@@ -913,18 +913,18 @@ namespace tinyxml2
 
         virtual char* ParseDeep(char* p, StrPair* parentEndTag, int* curLineNumPtr);
 
-        XMLDocument*	_document;
-        XMLNode*		_parent;
-        mutable StrPair	_value;
+        XMLDocument*    _document;
+        XMLNode*        _parent;
+        mutable StrPair _value;
         int             _parseLineNum;
 
-        XMLNode*		_firstChild;
-        XMLNode*		_lastChild;
+        XMLNode*        _firstChild;
+        XMLNode*        _lastChild;
 
-        XMLNode*		_prev;
-        XMLNode*		_next;
+        XMLNode*        _prev;
+        XMLNode*        _next;
 
-        void*			_userData;
+        void*           _userData;
 
     private:
         MemPool * _memPool;
@@ -933,8 +933,8 @@ namespace tinyxml2
         void InsertChildPreamble(XMLNode* insertThis) const;
         const XMLElement* ToElementWithName(const char* name) const;
 
-        XMLNode(const XMLNode&);	// not supported
-        XMLNode& operator=(const XMLNode&);	// not supported
+        XMLNode(const XMLNode&);    // not supported
+        XMLNode& operator=(const XMLNode&); // not supported
     };
 
 
@@ -982,8 +982,8 @@ namespace tinyxml2
     private:
         bool _isCData;
 
-        XMLText(const XMLText&);	// not supported
-        XMLText& operator=(const XMLText&);	// not supported
+        XMLText(const XMLText&);    // not supported
+        XMLText& operator=(const XMLText&); // not supported
     };
 
 
@@ -992,7 +992,7 @@ namespace tinyxml2
     {
         friend class XMLDocument;
     public:
-        virtual XMLComment*	ToComment() {
+        virtual XMLComment* ToComment() {
             return this;
         }
         virtual const XMLComment* ToComment() const {
@@ -1011,8 +1011,8 @@ namespace tinyxml2
         char* ParseDeep(char* p, StrPair* parentEndTag, int* curLineNumPtr);
 
     private:
-        XMLComment(const XMLComment&);	// not supported
-        XMLComment& operator=(const XMLComment&);	// not supported
+        XMLComment(const XMLComment&);  // not supported
+        XMLComment& operator=(const XMLComment&);   // not supported
     };
 
 
@@ -1029,7 +1029,7 @@ namespace tinyxml2
     {
         friend class XMLDocument;
     public:
-        virtual XMLDeclaration*	ToDeclaration() {
+        virtual XMLDeclaration* ToDeclaration() {
             return this;
         }
         virtual const XMLDeclaration* ToDeclaration() const {
@@ -1048,8 +1048,8 @@ namespace tinyxml2
         char* ParseDeep(char* p, StrPair* parentEndTag, int* curLineNumPtr);
 
     private:
-        XMLDeclaration(const XMLDeclaration&);	// not supported
-        XMLDeclaration& operator=(const XMLDeclaration&);	// not supported
+        XMLDeclaration(const XMLDeclaration&);  // not supported
+        XMLDeclaration& operator=(const XMLDeclaration&);   // not supported
     };
 
 
@@ -1063,7 +1063,7 @@ namespace tinyxml2
     {
         friend class XMLDocument;
     public:
-        virtual XMLUnknown*	ToUnknown() {
+        virtual XMLUnknown* ToUnknown() {
             return this;
         }
         virtual const XMLUnknown* ToUnknown() const {
@@ -1082,8 +1082,8 @@ namespace tinyxml2
         char* ParseDeep(char* p, StrPair* parentEndTag, int* curLineNumPtr);
 
     private:
-        XMLUnknown(const XMLUnknown&);	// not supported
-        XMLUnknown& operator=(const XMLUnknown&);	// not supported
+        XMLUnknown(const XMLUnknown&);  // not supported
+        XMLUnknown& operator=(const XMLUnknown&);   // not supported
     };
 
 
@@ -1115,7 +1115,7 @@ namespace tinyxml2
         If the value isn't an integer, 0 will be returned. There is no error checking;
         use QueryIntValue() if you need error checking.
         */
-        int	IntValue() const {
+        int IntValue() const {
             int i = 0;
             QueryIntValue(&i);
             return i;
@@ -1134,19 +1134,19 @@ namespace tinyxml2
             return i;
         }
         /// Query as a boolean. See IntValue()
-        bool	 BoolValue() const {
+        bool     BoolValue() const {
             bool b = false;
             QueryBoolValue(&b);
             return b;
         }
         /// Query as a double. See IntValue()
-        double 	 DoubleValue() const {
+        double   DoubleValue() const {
             double d = 0;
             QueryDoubleValue(&d);
             return d;
         }
         /// Query as a float. See IntValue()
-        float	 FloatValue() const {
+        float    FloatValue() const {
             float f = 0;
             QueryFloatValue(&f);
             return f;
@@ -1189,8 +1189,8 @@ namespace tinyxml2
         XMLAttribute() : _name(), _value(), _parseLineNum(0), _next(0), _memPool(0) {}
         virtual ~XMLAttribute() {}
 
-        XMLAttribute(const XMLAttribute&);	// not supported
-        void operator=(const XMLAttribute&);	// not supported
+        XMLAttribute(const XMLAttribute&);  // not supported
+        void operator=(const XMLAttribute&);    // not supported
         void SetName(const char* name);
 
         char* ParseDeep(char* p, bool processEntities, int* curLineNumPtr);
@@ -1276,7 +1276,7 @@ namespace tinyxml2
         value:
         @verbatim
         int value = 10;
-        QueryIntAttribute( "foo", &value );		// if "foo" isn't found, value will still be 10
+        QueryIntAttribute( "foo", &value );     // if "foo" isn't found, value will still be 10
         @endverbatim
         */
         XMLError QueryIntAttribute(const char* name, int* value) const {
@@ -1355,7 +1355,7 @@ namespace tinyxml2
         value:
         @verbatim
         int value = 10;
-        QueryAttribute( "foo", &value );		// if "foo" isn't found, value will still be 10
+        QueryAttribute( "foo", &value );        // if "foo" isn't found, value will still be 10
         @endverbatim
         */
         int QueryAttribute(const char* name, int* value) const {
@@ -1514,7 +1514,7 @@ namespace tinyxml2
         "value" of x and y.
         @verbatim
         int x = 0;
-        float y = 0;	// types of x and y are contrived for example
+        float y = 0;    // types of x and y are contrived for example
         const XMLElement* xElement = pointElement->FirstChildElement( "x" );
         const XMLElement* yElement = pointElement->FirstChildElement( "y" );
         xElement->QueryIntText( &x );
@@ -1550,9 +1550,9 @@ namespace tinyxml2
 
         // internal:
         enum ElementClosingType {
-            OPEN,		// <foo>
-            CLOSED,		// <foo/>
-            CLOSING		// </foo>
+            OPEN,       // <foo>
+            CLOSED,     // <foo/>
+            CLOSING     // </foo>
         };
         ElementClosingType ClosingType() const {
             return _closingType;
@@ -1566,8 +1566,8 @@ namespace tinyxml2
     private:
         XMLElement(XMLDocument* doc);
         virtual ~XMLElement();
-        XMLElement(const XMLElement&);	// not supported
-        void operator=(const XMLElement&);	// not supported
+        XMLElement(const XMLElement&);  // not supported
+        void operator=(const XMLElement&);  // not supported
 
         XMLAttribute* FindAttribute(const char* name) {
             return const_cast<XMLAttribute*>(const_cast<const XMLElement*>(this)->FindAttribute(name));
@@ -1808,17 +1808,17 @@ namespace tinyxml2
         }
 
     private:
-        XMLDocument(const XMLDocument&);	// not supported
-        void operator=(const XMLDocument&);	// not supported
+        XMLDocument(const XMLDocument&);    // not supported
+        void operator=(const XMLDocument&); // not supported
 
-        bool			_writeBOM;
-        bool			_processEntities;
-        XMLError		_errorID;
-        Whitespace		_whitespaceMode;
-        mutable StrPair	_errorStr;
+        bool            _writeBOM;
+        bool            _processEntities;
+        XMLError        _errorID;
+        Whitespace      _whitespaceMode;
+        mutable StrPair _errorStr;
         int             _errorLineNum;
-        char*			_charBuffer;
-        int				_parseCurLineNum;
+        char*           _charBuffer;
+        int             _parseCurLineNum;
         // Memory tracking does add some overhead.
         // However, the code assumes that you don't
         // have a bunch of unlinked nodes around.
@@ -1827,10 +1827,10 @@ namespace tinyxml2
         // and the performance is the same.
         DynArray<XMLNode*, 10> _unlinked;
 
-        MemPoolT< sizeof(XMLElement) >	 _elementPool;
+        MemPoolT< sizeof(XMLElement) >   _elementPool;
         MemPoolT< sizeof(XMLAttribute) > _attributePool;
-        MemPoolT< sizeof(XMLText) >		 _textPool;
-        MemPoolT< sizeof(XMLComment) >	 _commentPool;
+        MemPoolT< sizeof(XMLText) >      _textPool;
+        MemPoolT< sizeof(XMLComment) >   _commentPool;
 
         static const char* _errorNames[XML_ERROR_COUNT];
 
@@ -2004,7 +2004,7 @@ namespace tinyxml2
         const XMLConstHandle FirstChildElement(const char* name = 0) const {
             return XMLConstHandle(_node ? _node->FirstChildElement(name) : 0);
         }
-        const XMLConstHandle LastChild()	const {
+        const XMLConstHandle LastChild()    const {
             return XMLConstHandle(_node ? _node->LastChild() : 0);
         }
         const XMLConstHandle LastChildElement(const char* name = 0) const {
@@ -2182,7 +2182,7 @@ namespace tinyxml2
         DynArray< const char*, 10 > _stack;
 
     private:
-        void PrintString(const char*, bool restrictedEntitySet);	// prints out, after detecting entities.
+        void PrintString(const char*, bool restrictedEntitySet);    // prints out, after detecting entities.
 
         bool _firstElement;
         FILE* _fp;
@@ -2206,7 +2206,7 @@ namespace tinyxml2
     };
 
 
-}	// tinyxml2
+}   // tinyxml2
 
 #if defined(_MSC_VER)
 #   pragma warning(pop)

@@ -18,7 +18,7 @@ distribution.
 
 #include "tinyxml2.h"
 
-#include <new>		// yes, this one new style header, is in the Android SDK.
+#include <new>      // yes, this one new style header, is in the Android SDK.
 #if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
 #   include <stddef.h>
 #   include <stdarg.h>
@@ -51,13 +51,13 @@ static inline int TIXML_VSNPRINTF(char* buffer, size_t size, const char* format,
     return result;
 }
 
-#define TIXML_VSCPRINTF	_vscprintf
-#define TIXML_SSCANF	sscanf_s
+#define TIXML_VSCPRINTF _vscprintf
+#define TIXML_SSCANF    sscanf_s
 #elif defined _MSC_VER
 // Microsoft Visual Studio 2003 and earlier or WinCE
-#define TIXML_SNPRINTF	_snprintf
+#define TIXML_SNPRINTF  _snprintf
 #define TIXML_VSNPRINTF _vsnprintf
-#define TIXML_SSCANF	sscanf
+#define TIXML_SSCANF    sscanf
 #if (_MSC_VER < 1400 ) && (!defined WINCE)
 // Microsoft Visual Studio 2003 and not WinCE.
 #define TIXML_VSCPRINTF   _vscprintf // VS2003's C runtime has this, but VC6 C runtime or WinCE SDK doesn't have.
@@ -84,8 +84,8 @@ static inline int TIXML_VSCPRINTF(const char* format, va_list va)
 #else
 // GCC version 3 and higher
 //#warning( "Using sn* functions." )
-#define TIXML_SNPRINTF	snprintf
-#define TIXML_VSNPRINTF	vsnprintf
+#define TIXML_SNPRINTF  snprintf
+#define TIXML_VSNPRINTF vsnprintf
 static inline int TIXML_VSCPRINTF(const char* format, va_list va)
 {
     int len = vsnprintf(0, 0, format, va);
@@ -96,16 +96,16 @@ static inline int TIXML_VSCPRINTF(const char* format, va_list va)
 #endif
 
 
-static const char LINE_FEED = (char)0x0a;			// all line endings are normalized to LF
+static const char LINE_FEED = (char)0x0a;           // all line endings are normalized to LF
 static const char LF = LINE_FEED;
-static const char CARRIAGE_RETURN = (char)0x0d;			// CR gets filtered out
+static const char CARRIAGE_RETURN = (char)0x0d;         // CR gets filtered out
 static const char CR = CARRIAGE_RETURN;
 static const char SINGLE_QUOTE = '\'';
 static const char DOUBLE_QUOTE = '\"';
 
 // Bunch of unicode info at:
-//		http://www.unicode.org/faq/utf_bom.html
-//	ef bb bf (Microsoft "lead bytes") - designates UTF-8
+//      http://www.unicode.org/faq/utf_bom.html
+//  ef bb bf (Microsoft "lead bytes") - designates UTF-8
 
 static const unsigned char TIXML_UTF_LEAD_0 = 0xefU;
 static const unsigned char TIXML_UTF_LEAD_1 = 0xbbU;
@@ -122,11 +122,11 @@ namespace tinyxml2
 
     static const int NUM_ENTITIES = 5;
     static const Entity entities[NUM_ENTITIES] = {
-        { "quot", 4,	DOUBLE_QUOTE },
-    { "amp", 3,		'&' },
-    { "apos", 4,	SINGLE_QUOTE },
-    { "lt",	2, 		'<' },
-    { "gt",	2,		'>' }
+        { "quot", 4,    DOUBLE_QUOTE },
+    { "amp", 3,     '&' },
+    { "apos", 4,    SINGLE_QUOTE },
+    { "lt", 2,      '<' },
+    { "gt", 2,      '>' }
     };
 
 
@@ -239,8 +239,8 @@ namespace tinyxml2
         _start = XMLUtil::SkipWhiteSpace(_start, 0);
 
         if (*_start) {
-            const char* p = _start;	// the read pointer
-            char* q = _start;	// the write pointer
+            const char* p = _start; // the read pointer
+            char* q = _start;   // the write pointer
 
             while (*p) {
                 if (XMLUtil::IsWhiteSpace(*p)) {
@@ -269,8 +269,8 @@ namespace tinyxml2
             _flags ^= NEEDS_FLUSH;
 
             if (_flags) {
-                const char* p = _start;	// the read pointer
-                char* q = _start;	// the write pointer
+                const char* p = _start; // the read pointer
+                char* q = _start;   // the write pointer
 
                 while (p < _end) {
                     if ((_flags & NEEDS_NEWLINE_NORMALIZATION) && *p == CR) {
@@ -640,7 +640,7 @@ namespace tinyxml2
 
     bool XMLUtil::ToInt64(const char* str, int64_t* value)
     {
-        long long v = 0;	// horrible syntax trick to make the compiler happy about %lld
+        long long v = 0;    // horrible syntax trick to make the compiler happy about %lld
         if (TIXML_SSCANF(str, "%lld", &v) == 1) {
             *value = (int64_t)v;
             return true;
@@ -667,7 +667,7 @@ namespace tinyxml2
         static const char* commentHeader = { "<!--" };
         static const char* cdataHeader = { "<![CDATA[" };
         static const char* dtdHeader = { "<!" };
-        static const char* elementHeader = { "<" };	// and a header for everything else; check last.
+        static const char* elementHeader = { "<" }; // and a header for everything else; check last.
 
         static const int xmlHeaderLen = 2;
         static const int commentHeaderLen = 4;
@@ -675,8 +675,8 @@ namespace tinyxml2
         static const int dtdHeaderLen = 2;
         static const int elementHeaderLen = 1;
 
-        TIXMLASSERT(sizeof(XMLComment) == sizeof(XMLUnknown));		// use same memory pool
-        TIXMLASSERT(sizeof(XMLComment) == sizeof(XMLDeclaration));	// use same memory pool
+        TIXMLASSERT(sizeof(XMLComment) == sizeof(XMLUnknown));      // use same memory pool
+        TIXMLASSERT(sizeof(XMLComment) == sizeof(XMLDeclaration));  // use same memory pool
         XMLNode* returnNode = 0;
         if (XMLUtil::StringEqual(p, xmlHeader, xmlHeaderLen)) {
             returnNode = CreateUnlinkedNode<XMLDeclaration>(_commentPool);
@@ -708,7 +708,7 @@ namespace tinyxml2
         else {
             returnNode = CreateUnlinkedNode<XMLText>(_textPool);
             returnNode->_parseLineNum = _parseCurLineNum; // Report line of first non-whitespace character
-            p = start;	// Back it up, all the text counts.
+            p = start;  // Back it up, all the text counts.
             _parseCurLineNum = startLine;
         }
 
@@ -985,13 +985,13 @@ namespace tinyxml2
     {
         // This is a recursive method, but thinking about it "at the current level"
         // it is a pretty simple flat list:
-        //		<foo/>
-        //		<!-- comment -->
+        //      <foo/>
+        //      <!-- comment -->
         //
         // With a special case:
-        //		<foo>
-        //		</foo>
-        //		<!-- comment -->
+        //      <foo>
+        //      </foo>
+        //      <!-- comment -->
         //
         // Where the closing element (/foo) *must* be the next thing after the opening
         // element, and the names must match. BUT the tricky bit is that the closing
@@ -1158,7 +1158,7 @@ namespace tinyxml2
         if (!doc) {
             doc = _document;
         }
-        XMLText* text = doc->NewText(Value());	// fixme: this will always allocate memory. Intern?
+        XMLText* text = doc->NewText(Value());  // fixme: this will always allocate memory. Intern?
         text->SetCData(this->CData());
         return text;
     }
@@ -1207,7 +1207,7 @@ namespace tinyxml2
         if (!doc) {
             doc = _document;
         }
-        XMLComment* comment = doc->NewComment(Value());	// fixme: this will always allocate memory. Intern?
+        XMLComment* comment = doc->NewComment(Value()); // fixme: this will always allocate memory. Intern?
         return comment;
     }
 
@@ -1256,7 +1256,7 @@ namespace tinyxml2
         if (!doc) {
             doc = _document;
         }
-        XMLDeclaration* dec = doc->NewDeclaration(Value());	// fixme: this will always allocate memory. Intern?
+        XMLDeclaration* dec = doc->NewDeclaration(Value()); // fixme: this will always allocate memory. Intern?
         return dec;
     }
 
@@ -1304,7 +1304,7 @@ namespace tinyxml2
         if (!doc) {
             doc = _document;
         }
-        XMLUnknown* text = doc->NewUnknown(Value());	// fixme: this will always allocate memory. Intern?
+        XMLUnknown* text = doc->NewUnknown(Value());    // fixme: this will always allocate memory. Intern?
         return text;
     }
 
@@ -1349,14 +1349,14 @@ namespace tinyxml2
             return 0;
         }
 
-        ++p;	// move up to opening quote
+        ++p;    // move up to opening quote
         p = XMLUtil::SkipWhiteSpace(p, curLineNumPtr);
         if (*p != '\"' && *p != '\'') {
             return 0;
         }
 
         char endTag[2] = { *p, 0 };
-        ++p;	// move past opening quote
+        ++p;    // move past opening quote
 
         p = _value.ParseText(p, endTag, processEntities ? StrPair::ATTRIBUTE_VALUE : StrPair::ATTRIBUTE_VALUE_LEAVE_ENTITIES, curLineNumPtr);
         return p;
@@ -1568,12 +1568,12 @@ namespace tinyxml2
     }
 
 
-    void	XMLElement::SetText(const char* inText)
+    void    XMLElement::SetText(const char* inText)
     {
         if (FirstChild() && FirstChild()->ToText())
             FirstChild()->SetValue(inText);
         else {
-            XMLText*	theText = GetDocument()->NewText(inText);
+            XMLText*    theText = GetDocument()->NewText(inText);
             InsertFirstChild(theText);
         }
     }
@@ -1843,7 +1843,7 @@ namespace tinyxml2
             // end of the tag
             else if (*p == '/' && *(p + 1) == '>') {
                 _closingType = CLOSED;
-                return p + 2;	// done; sealed element.
+                return p + 2;   // done; sealed element.
             }
             else {
                 _document->SetError(XML_ERROR_PARSING_ELEMENT, _parseLineNum, 0);
@@ -1874,8 +1874,8 @@ namespace tinyxml2
     }
 
     //
-    //	<ele></ele>
-    //	<ele>foo<b>bar</b></ele>
+    //  <ele></ele>
+    //  <ele>foo<b>bar</b></ele>
     //
     char* XMLElement::ParseDeep(char* p, StrPair* parentEndTag, int* curLineNumPtr)
     {
@@ -1911,9 +1911,9 @@ namespace tinyxml2
         if (!doc) {
             doc = _document;
         }
-        XMLElement* element = doc->NewElement(Value());					// fixme: this will always allocate memory. Intern?
+        XMLElement* element = doc->NewElement(Value());                 // fixme: this will always allocate memory. Intern?
         for (const XMLAttribute* a = FirstAttribute(); a; a = a->Next()) {
-            element->SetAttribute(a->Name(), a->Value());					// fixme: this will always allocate memory. Intern?
+            element->SetAttribute(a->Name(), a->Value());                   // fixme: this will always allocate memory. Intern?
         }
         return element;
     }
@@ -2030,7 +2030,7 @@ namespace tinyxml2
     {
         DeleteChildren();
         while (_unlinked.Size()) {
-            DeleteNode(_unlinked[0]);	// Will remove from _unlinked as part of delete.
+            DeleteNode(_unlinked[0]);   // Will remove from _unlinked as part of delete.
         }
 
 #ifdef TINYXML2_DEBUG
@@ -2396,7 +2396,7 @@ namespace tinyxml2
         }
         _restrictedEntityFlag[(unsigned char)'&'] = true;
         _restrictedEntityFlag[(unsigned char)'<'] = true;
-        _restrictedEntityFlag[(unsigned char)'>'] = true;	// not required, but consistency is nice
+        _restrictedEntityFlag[(unsigned char)'>'] = true;   // not required, but consistency is nice
         _buffer.Push(0);
     }
 
@@ -2416,7 +2416,7 @@ namespace tinyxml2
             TIXMLASSERT(len >= 0);
             va_start(va, format);
             TIXMLASSERT(_buffer.Size() > 0 && _buffer[_buffer.Size() - 1] == 0);
-            char* p = _buffer.PushArr(len) - 1;	// back up over the null terminator.
+            char* p = _buffer.PushArr(len) - 1; // back up over the null terminator.
             TIXML_VSNPRINTF(p, len + 1, format, va);
         }
         va_end(va);

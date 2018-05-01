@@ -530,10 +530,10 @@ int main()
     Calculation* calc = new Calculation(msh);
     calc->init("bnd.xml");
     calc->calc_heat_equation(0.2);
-    calc->save("exampleXML.vtk");
+    calc->save("exampleXML.vtk", "ourMesh");
 
     /*msh->iteratePoints(&funcPoints);
     msh->iterateCells(&funcCells);
     cout << pointC << endl;*/
-    //system("pause");
+    system("pause");
 }

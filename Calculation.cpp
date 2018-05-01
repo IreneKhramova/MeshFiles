@@ -138,12 +138,13 @@ void Calculation::calc_heat_equation(double t_max)
     }
 }
 
-void Calculation::save(const char *filename)
+void Calculation::save(const char *filename, const char *header)
 {
     FILE *out;
     out = fopen(filename, "w");
     fprintf(out, "# vtk DataFile Version 3.0\n");
-    fprintf(out, "Mesh\n");
+    //The header can be used to describe the data
+    fprintf(out, "%s\n", header);
     fprintf(out, "ASCII\n");
     fprintf(out, "DATASET UNSTRUCTURED_GRID\n");
     fprintf(out, "POINTS %d double\n", msh->pCount);

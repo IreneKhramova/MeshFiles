@@ -14,7 +14,7 @@ public:
 
     void init(const char *filename);
     void calc_heat_equation(double t_max); // изменение температуры за время t_max
-    void save(const char *filename); // запись в vtk
+    void save(const char *filename, const char *header); // запись в vtk
 };
 
 #endif // CALCULATION_H

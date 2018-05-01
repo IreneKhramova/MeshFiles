@@ -107,7 +107,7 @@ void Calculation::init(const char *filename)
 }
 
 
-void Calculation::calc_heat_equation(double t_max)
+void Calculation::calcHeatEquation(double t_max)
 {
     double min_volume = msh->cells[0]->V;
     for (Mesh::CellIterator it = msh->beginCell(), ite = msh->endCell(); it != ite; ++it)
